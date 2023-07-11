@@ -1,6 +1,9 @@
 # Use a base Node.js image
 FROM node:19
 
+# Install vim
+RUN apt-get update && apt-get install vim -y
+
 # Set the working directory inside the container
 WORKDIR /app/nestjs
 
@@ -10,6 +13,8 @@ COPY ./package*.json ./
 # Install dependencies
 RUN npm install -g npm@9.8.0
 RUN npm install -g @nestjs/cli
+RUN npm install --save @nestjs/typeorm typeorm
+RUN npm install pg --save
 RUN npm install
 
 # Copy the application files
