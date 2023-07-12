@@ -5,9 +5,9 @@ FROM postgres
 RUN apt-get update && apt-get install vim -y
 
 # Set environment variables for the PostgreSQL database
-ENV POSTGRES_USER rdas-nev
-ENV POSTGRES_PASSWORD inception123
-ENV POSTGRES_DB pongdb
+ENV POSTGRES_USER=root
+ENV POSTGRES_PASSWORD=inception123
+ENV POSTGRES_DB=pongdb
 
 # Expose the default PostgreSQL port
 EXPOSE 5432

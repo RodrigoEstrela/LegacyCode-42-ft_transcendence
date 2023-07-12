@@ -6,10 +6,10 @@ import * as ejs from 'ejs';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useStaticAssets(join(__dirname, '..', 'game'));
+  app.useStaticAssets(join(__dirname, '..', 'html_files'));
   app.engine('html', ejs.renderFile);
   app.set('view engine', 'html');
-  app.setBaseViewsDir(join(__dirname, '..', 'game')); // Update the views directory path
+  app.setBaseViewsDir(join(__dirname, '..', 'html_files')); // Update the views directory path
   await app.listen(3000);
 }
 

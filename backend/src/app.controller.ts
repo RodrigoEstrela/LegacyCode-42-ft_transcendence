@@ -1,19 +1,24 @@
 import { Controller, Get, Render } from '@nestjs/common';
-import { AppService } from './app.service';
-import { Dependencies } from '@nestjs/common';
 
 @Controller()
-@Dependencies(AppService)
 export class AppController {
-  private readonly appService: AppService;
-
-  constructor(appService: AppService) {
-    this.appService = appService;
-  }
-
-  @Get()
+  @Get('/pong')
   @Render('pong')
-  root() {
+  pong() {
+    // Use this.appService in your controller method logic if needed
+  }
+  @Get('/submit')
+  @Render('submit')
+  submit() {
+    // Use this.appService in your controller method logic if needed
+  }
+}
+
+@Controller('form')
+export class FormController {
+  @Get()
+  @Render('form')
+  form() {
     // Use this.appService in your controller method logic if needed
   }
 }
