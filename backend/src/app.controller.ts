@@ -1,12 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Render } from '@nestjs/common';
 import { AppService } from './app.service';
+import { Dependencies } from '@nestjs/common';
 
 @Controller()
+@Dependencies(AppService)
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  private readonly appService: AppService;
+
+  constructor(appService: AppService) {
+    this.appService = appService;
+  }
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Render('pong')
+  root() {
+    // Use this.appService in your controller method logic if needed
   }
 }

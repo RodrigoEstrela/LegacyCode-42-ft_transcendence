@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 
 @Module({
@@ -16,6 +18,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 		synchronize: true,
 		logging: true,
 		entities: [__dirname + '/**/*.entity(.ts,.js)'],
+	}),
+	ServeStaticModule.forRoot({
+		rootPath: join(__dirname, '..', 'game'),
+		exclude: ['/api*'],
 	}),
 ],
   controllers: [AppController],

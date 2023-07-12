@@ -15,6 +15,8 @@ RUN npm install -g npm@9.8.0
 RUN npm install -g @nestjs/cli
 RUN npm install --save @nestjs/typeorm typeorm
 RUN npm install pg --save
+RUN npm i --save @nestjs/serve-static
+RUN npm install ejs
 RUN npm install
 
 # Copy the application files
@@ -29,4 +31,3 @@ EXPOSE 3000
 
 # Start the NestJS application
 CMD ["pm2-runtime", "start", "npm", "--", "run", "start:dev"]
-
