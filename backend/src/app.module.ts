@@ -12,7 +12,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 		type: 'postgres',
 		host: 'ft_transcendence_postgres',
 		port: 5432,
-		username: 'root',
+		username: 'rdas-nev',
 		password: 'inception123',
 		database: 'pongdb',
 		synchronize: true,
