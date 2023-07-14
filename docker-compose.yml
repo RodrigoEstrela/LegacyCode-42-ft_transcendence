@@ -5,7 +5,7 @@ services:
    container_name: ft_transcendence_backend
    build:
     context: ./backend
-    dockerfile: Dockerfile
+    dockerfile: src/api/Dockerfile
    ports: 
      - '3000:3000'
    volumes:
@@ -16,13 +16,25 @@ services:
   postgres:
    container_name: ft_transcendence_postgres
    build:
-    context: ./database
-    dockerfile: Dockerfile
+    context: ./backend/
+    dockerfile: src/database/Dockerfile
    ports:
      - '5432:5432'
    volumes:
      - /var/lib/postgresql/data
+   networks:
+     - default
     
+  adminer-docker:
+   image: adminer:4.8.1
+   container_name: ft_transcendence_adminer
+   restart: on-failure
+   depends_on:
+     - postgres
+   networks:
+     - default
+   ports:
+     - 8084:8080 
 
 networks:
   default:

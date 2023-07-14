@@ -1,0 +1,1 @@
+export {default as AuthenticationModule} from "./auth.module";

@@ -4,7 +4,10 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
-
+import { AuthenticationModule } from './modules';
+import { User } from './entities/user.entity';
+import { AuthenticationController } from './controllers';
+import { UserService } from './services/user.service';
 
 @Module({
   imports: [
@@ -23,8 +26,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 		rootPath: join(__dirname, '..', 'html_files'),
 		exclude: ['/api*'],
 	}),
+	AuthenticationModule,
+	TypeOrmModule.forFeature([User]),
 ],
-  controllers: [AppController, FormController],
-//   providers: [AppService],
+  controllers: [AppController, FormController, AuthenticationController],
+  providers: [UserService],
 })
 export class AppModule {}
