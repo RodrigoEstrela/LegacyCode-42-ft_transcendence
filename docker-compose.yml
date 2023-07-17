@@ -3,6 +3,8 @@ version: '3'
 services:
   backend:
    container_name: ft_transcendence_backend
+   depends_on:
+     - postgres
    build:
     context: ./backend
     dockerfile: src/api/Dockerfile
@@ -12,6 +14,7 @@ services:
      - ./backend/src:/app/nestjs/src
    networks:
      - default
+   restart: always
 
   postgres:
    container_name: ft_transcendence_postgres
@@ -35,6 +38,8 @@ services:
      - default
    ports:
      - 8080:8080 
+   volumes:
+     - ./adminer-data:/var/lib/adminer 
 
 networks:
   default:
