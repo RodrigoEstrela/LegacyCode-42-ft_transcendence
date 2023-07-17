@@ -7,16 +7,7 @@ export class AppController {
   pong() {
     // Use this.appService in your controller method logic if needed
   }
-  @Get('/submit')
-  @Render('submit')
-  submit() {
-    // Use this.appService in your controller method logic if needed
-  }
-}
-
-@Controller('form')
-export class FormController {
-  @Get()
+  @Get('/form')
   @Render('form')
   form() {
     // Use this.appService in your controller method logic if needed

@@ -9,7 +9,7 @@ services:
     context: ./backend
     dockerfile: src/api/Dockerfile
    ports: 
-     - '3000:3000'
+     - '5000:5000'
    volumes:
      - ./backend/src:/app/nestjs/src
    networks:
@@ -40,6 +40,18 @@ services:
      - 8080:8080 
    volumes:
      - ./adminer-data:/var/lib/adminer 
+
+  frontend:
+    container_name: ft_transcendence_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+    networks:
+      - default
 
 networks:
   default:

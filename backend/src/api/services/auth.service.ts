@@ -14,7 +14,7 @@ export class AuthService {
     const user = new Auth();
     user.name = name;
     user.email = email;
-
+    
     return await this.authRepository.save(user);
   }
 }

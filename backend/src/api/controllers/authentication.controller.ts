@@ -9,6 +9,7 @@ class AuthenticationController {
 
   @Post('signup')
   async createUser(@Body() createAuthDto: CreateAuthDto) {
+    console.log('Received create user request');
     const userCreated = await this.authService.createUser(
         createAuthDto.name,
         createAuthDto.email
