@@ -1,9 +1,9 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
+import { Auth } from '../entities/auth.entity';
 
-@EntityRepository(User)
-export class UserRepository extends Repository<User> {
-  async createUser(name: string /* Add other user properties as arguments */): Promise<User> {
+@EntityRepository(Auth)
+export class AuthRepository extends Repository<Auth> {
+  async createUser(name: string /* Add other user properties as arguments */): Promise<Auth> {
     const user = this.create({
       name,
       // Assign other user properties...

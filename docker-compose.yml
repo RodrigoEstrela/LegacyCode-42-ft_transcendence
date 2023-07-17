@@ -34,7 +34,7 @@ services:
    networks:
      - default
    ports:
-     - 8084:8080 
+     - 8080:8080 
 
 networks:
   default:

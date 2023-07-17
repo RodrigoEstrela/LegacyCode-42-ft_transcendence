@@ -5,9 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuthenticationModule } from './modules';
-import { User } from './entities/user.entity';
+import { Auth } from './entities/auth.entity';
 import { AuthenticationController } from './controllers';
-import { UserService } from './services/user.service';
+import { AuthService } from './services/auth.service';
 
 @Module({
   imports: [
@@ -19,17 +19,16 @@ import { UserService } from './services/user.service';
 		password: 'inception123',
 		database: 'pongdb',
 		synchronize: true,
-		logging: true,
-		entities: [__dirname + '/**/*.entity(.ts,.js)'],
+		autoLoadEntities: true,
 	}),
 	ServeStaticModule.forRoot({
 		rootPath: join(__dirname, '..', 'html_files'),
 		exclude: ['/api*'],
 	}),
 	AuthenticationModule,
-	TypeOrmModule.forFeature([User]),
+	TypeOrmModule.forFeature([Auth])
 ],
   controllers: [AppController, FormController, AuthenticationController],
-  providers: [UserService],
+  providers: [AuthService],
 })
 export class AppModule {}
