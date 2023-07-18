@@ -12,8 +12,9 @@ services:
      - '5000:5000'
    volumes:
      - ./backend/src:/app/nestjs/src
+     - ./volumes/backend-build:/usr/src/app/client
    networks:
-     - default
+     - ft_transcendence
    restart: always
 
   postgres:
@@ -26,7 +27,7 @@ services:
    volumes:
      - /var/lib/postgresql/data
    networks:
-     - default
+     - ft_transcendence
     
   adminer-docker:
    image: adminer:4.8.1
@@ -35,11 +36,11 @@ services:
    depends_on:
      - postgres
    networks:
-     - default
+     - ft_transcendence
    ports:
      - 8080:8080 
    volumes:
-     - ./adminer-data:/var/lib/adminer 
+     - /var/lib/adminer 
 
   frontend:
     container_name: ft_transcendence_frontend
@@ -50,10 +51,10 @@ services:
       - '3000:3000'
     volumes:
       - ./frontend:/app
+      - ./volumes/frontend-build:/usr/src/app/dist
     networks:
-      - default
+      - ft_transcendence
 
 networks:
-  default:
-    name: ft_transcendence
-
+  ft_transcendence:
+    driver: bridge

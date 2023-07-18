@@ -1,9 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuthenticationModule } from './modules';
 import { Auth } from './entities/auth.entity';
 import { AuthenticationController } from './controllers';
@@ -21,14 +17,10 @@ import { AuthService } from './services/auth.service';
 		synchronize: true,
 		autoLoadEntities: true,
 	}),
-	ServeStaticModule.forRoot({
-		rootPath: join(__dirname, '..', 'html_files'),
-		exclude: ['/api*'],
-	}),
-	AuthenticationModule,
-	TypeOrmModule.forFeature([Auth])
+	TypeOrmModule.forFeature([Auth]),
+	AuthenticationModule
 ],
-  controllers: [AppController, AuthenticationController],
+  controllers: [AuthenticationController],
   providers: [AuthService],
 })
 export class AppModule {}
