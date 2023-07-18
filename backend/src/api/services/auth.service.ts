@@ -17,4 +17,11 @@ export class AuthService {
     
     return await this.authRepository.save(user);
   }
+
+  async checkUserExists(name: string, email: string): Promise<boolean> {
+    const user = await this.authRepository.findOne({
+      where: [{ name }, { email }],
+    });
+    return !!user;
+  }
 }

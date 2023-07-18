@@ -1,3 +1,5 @@
+# Files
+.env
+# Directories
 node_modules
-
 /volumes

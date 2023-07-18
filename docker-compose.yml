@@ -18,17 +18,20 @@ services:
    restart: always
 
   postgres:
+   image: postgres:15.1
    container_name: ft_transcendence_postgres
-   build:
-    context: ./backend/
-    dockerfile: src/database/Dockerfile
-   ports:
-     - '5432:5432'
-   volumes:
-     - /var/lib/postgresql/data
+   restart: on-failure
    networks:
      - ft_transcendence
-    
+   environment:
+     POSTGRES_USER: ${POSTGRES_USER}
+     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+     POSTGRES_DB: ${POSTGRES_DB}
+   ports:
+     - ${POSTGRES_HOST_PORT}:5432
+   volumes:
+     - /var/lib/postgresql/data
+
   adminer-docker:
    image: adminer:4.8.1
    container_name: ft_transcendence_adminer
