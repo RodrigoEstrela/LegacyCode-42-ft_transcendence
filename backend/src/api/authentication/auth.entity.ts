@@ -11,3 +11,5 @@ export class Auth {
   @Column()
   email: string;
 }
+
+export default Auth;

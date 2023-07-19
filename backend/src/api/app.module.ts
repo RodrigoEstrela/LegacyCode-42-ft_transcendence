@@ -1,9 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthenticationModule } from './modules';
-import { Auth } from './entities/auth.entity';
-import { AuthenticationController } from './controllers';
-import { AuthService } from './services/auth.service';
+import { Auth, AuthModule, AuthController, AuthService } from './authentication';
 
 @Module({
   imports: [
@@ -18,9 +15,9 @@ import { AuthService } from './services/auth.service';
 		autoLoadEntities: true,
 	}),
 	TypeOrmModule.forFeature([Auth]),
-	AuthenticationModule
+	AuthModule
 ],
-  controllers: [AuthenticationController],
+  controllers: [AuthController],
   providers: [AuthService],
 })
 export class AppModule {}

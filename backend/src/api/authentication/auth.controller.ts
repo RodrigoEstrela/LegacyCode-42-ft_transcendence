@@ -1,13 +1,13 @@
 import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
-import { AuthService } from '../services/auth.service';
-import { CreateAuthDto } from '../dto/auth.dto';
+import { AuthService } from './auth.service';
+import  AuthDto  from './auth.dto';
 
 @Controller('auth')
-class AuthenticationController {
+export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async createUser(@Body() createAuthDto: CreateAuthDto) {
+  async createUser(@Body() createAuthDto: AuthDto) {
     const { name, email } = createAuthDto;
 
     // Check if a user with the same name or email already exists
@@ -27,4 +27,4 @@ class AuthenticationController {
   }
 }
 
-export default AuthenticationController;
+export default AuthController;

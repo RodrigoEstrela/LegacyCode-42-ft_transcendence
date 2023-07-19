@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Auth } from '../entities/auth.entity';
+import { Auth } from './auth.entity';
 
 @Injectable()
 export class AuthService {
@@ -25,3 +25,5 @@ export class AuthService {
     return !!user;
   }
 }
+
+export default AuthService;
