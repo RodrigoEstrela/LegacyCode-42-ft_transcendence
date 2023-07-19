@@ -7,7 +7,7 @@ services:
      - postgres
    build:
     context: ./backend
-    dockerfile: src/api/Dockerfile
+    dockerfile: src/Dockerfile
    ports: 
      - '5000:5000'
    volumes:

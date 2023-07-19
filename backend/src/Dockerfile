@@ -10,6 +10,9 @@ WORKDIR /app/nestjs
 # Copy the package.json and package-lock.json files
 COPY ./package*.json ./
 
+# Copy the .env file
+COPY ./src/.env ./
+
 # Install dependencies
 RUN npm install
 

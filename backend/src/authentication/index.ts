@@ -1,4 +1,4 @@
-export {default as Auth} from "./auth.entity";
+export {default as Auth} from "../global_entities/user.entity";
 export {default as AuthModule} from "./auth.module";
 export {default as AuthController} from "./auth.controller";
 export {default as AuthService} from "./auth.service";
