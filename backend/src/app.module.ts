@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Auth, AuthModule, AuthController, AuthService } from './authentication';
 import { config } from 'dotenv';
+import { ChatGateway }  from './chat/app.gateway';
 
 config();
 
@@ -18,9 +19,9 @@ config();
 		autoLoadEntities: true,
 	}),
 	TypeOrmModule.forFeature([Auth]),
-	AuthModule
+	AuthModule,
 ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, ChatGateway],
 })
 export class AppModule {}

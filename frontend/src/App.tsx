@@ -1,45 +1,48 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-
-const App = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const data = {
-      name,
-      email
-    };
-
-    axios.post('http://localhost:5000/auth/signup', data)
-      .then(response => {
-        console.log('Signup successful!', response.data);
-      })
-      .catch(error => {
-        console.log('Error occurred during signup:', error);
-      });
+import React, { useEffect, useState } from 'react';
+const App: React.FC = () => {
+  const [messages, setMessages] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const socket = new WebSocket('ws://localhost:5050');
+  socket.onerror = (error) => {
+    console.log('WebSocket error: ', error);
   };
 
+  useEffect(() => {
+    console.log('WebSocket connection established.');
+    const messageHandler = (event: MessageEvent) => {
+      const message = event.data;
+      setMessages((prevMessages) => [...prevMessages, message]);
+    };
+    socket.addEventListener('message', messageHandler);
+    return () => {
+      socket.removeEventListener('message', messageHandler);
+      socket.close();
+    };
+  }, []);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    socket.send(inputValue);
+    setInputValue('');
+  };
   return (
     <div>
-      <h1>User Registration</h1>
-
+      <h1>Chat Test</h1>
+      <div>
+        {messages.map((message, index) => (
+          <p key={index}>{message}</p>
+        ))}
+      </div>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Name:</label>
-        <input type="text" id="name" name="name" value={name} onChange={e => setName(e.target.value)} required />
-        <br />
-
-        <label htmlFor="email">Email:</label>
-        <input type="email" id="email" name="email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <br />
-
-        <input type="submit" value="Sign Up" />
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(event) => setInputValue(event.target.value)}
+          placeholder="Enter message"
+        />
+        <button type="submit">Send</button>
       </form>
     </div>
   );
 };
-
 export default App;
 
