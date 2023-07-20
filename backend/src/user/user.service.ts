@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '.';
@@ -20,12 +20,23 @@ export class UserService {
   }
 
   async update(username: string, updateUserDto: Partial<User>): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { username } });
-    if (user) {
-      Object.assign(user, updateUserDto);
-      return this.userRepository.save(user);
+    const existingUser = await this.userRepository.findOne({ where: { username } });
+    if (!existingUser) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    return null;
+
+    // Check if the new username is provided in the updateUserDto
+    if (updateUserDto.username) {
+      const newUser = await this.userRepository.findOne({ where: { username: updateUserDto.username } });
+      // Check if the new username already exists and is different from the current username
+      if (newUser && newUser.username !== username) {
+        throw new HttpException('User with the new username already exists', HttpStatus.CONFLICT);
+      }
+    }
+
+    // Update the user with the provided data
+    Object.assign(existingUser, updateUserDto);
+    return this.userRepository.save(existingUser);
   }
 
   async remove(username: string): Promise<User> {
