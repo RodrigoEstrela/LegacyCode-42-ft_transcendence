@@ -39,10 +39,6 @@ export class UserController {
 
         return await this.userService.remove(username);
     }
-
-    // New method to check if a user with the given username exists
-    
 }
-
 
 export default UserController;
