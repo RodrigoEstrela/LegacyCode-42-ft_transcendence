@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Auth, AuthModule, AuthController, AuthService } from './authentication';
+import { User, UserModule, UserController, UserService } from './user';
 import { config } from 'dotenv';
 import { ChatGateway }  from './chat/app.gateway';
 
@@ -20,8 +21,11 @@ config();
 	}),
 	TypeOrmModule.forFeature([Auth]),
 	AuthModule,
+	TypeOrmModule.forFeature([User]),
+	UserModule,
 ],
-  controllers: [AuthController],
-  providers: [AuthService, ChatGateway],
+  controllers: [AuthController, UserController],
+  providers: [AuthService, UserService, ChatGateway],
 })
+
 export class AppModule {}
