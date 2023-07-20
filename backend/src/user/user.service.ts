@@ -36,6 +36,12 @@ export class UserService {
     }
     return null;
   }
+
+  async userExists(username: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({ where: { username } });
+    return !!user;
+  }
+  
 }
 
 export default UserService;
