@@ -22,12 +22,36 @@ export class UserController {
     
     @Put(':username')
     async update(@Param('username') username: string, @Body() updateUserDto: UserDto) {
+        console.log('-----Received update user request-----');
+        console.log("target: ", username);
+        console.log('--------------------------------------');
+        console.log("payload:\n", updateUserDto);
+        console.log('--------------------------------------');
+
         const userExists = await this.userService.userExists(username);
         if (!userExists) {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
 
         return await this.userService.update(username, updateUserDto);
+    }
+    
+    @Put(':username/:command/:value')
+    async updateStats(@Param('username') username: string, @Param('command') command: string, @Param('value') value: string) {
+        console.log('-----Received update user stats request-----');
+        console.log("target: ", username);
+        console.log('--------------------------------------');
+        console.log("command: ", command);
+        console.log('--------------------------------------');
+        console.log("value: ", value);
+        console.log('--------------------------------------');
+
+        const userExists = await this.userService.userExists(username);
+        if (!userExists) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+
+        return await this.userService.updateStats(username, command, value);
     }
     
     @Delete(':username')

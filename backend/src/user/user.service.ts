@@ -11,14 +11,15 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  // GET ALL USERS ------------------------------------------------------------------------------------------
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
-
+  // GET ONE USER -------------------------------------------------------------------------------------------
   async findOne(username: string): Promise<User> {
     return this.userRepository.findOne({ where: { username } });
   }
-
+  // UPDATE USER --------------------------------------------------------------------------------------------
   async update(username: string, updateUserDto: Partial<User>): Promise<User> {
     const existingUser = await this.userRepository.findOne({ where: { username } });
     if (!existingUser) {
@@ -38,7 +39,33 @@ export class UserService {
     Object.assign(existingUser, updateUserDto);
     return this.userRepository.save(existingUser);
   }
-
+  // UPDATE USER STATS --------------------------------------------------------------------------------------
+  async updateStats(username: string, command: string, value: string): Promise<User> {
+    const existingUser = await this.userRepository.findOne({ where: { username } });
+    if (!existingUser) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    // TODO: Be ready for JSON payload for game history
+    // Update the user with the provided data
+    switch (command) {
+      case 'game':
+        existingUser.stats["Games Played"] += 1;
+        if (value === 'win') {
+          existingUser.stats["Wins"] += 1;
+          existingUser.stats["Score"] += 10;
+          // TODO: ADICIONAR SISTEMA DE RANKING
+        }
+        else if (value === 'loss') {
+          existingUser.stats["Losses"] += 1;
+          if (existingUser.stats["Score"] > 0) {
+            existingUser.stats["Score"] -= 5;
+          }
+          // TODO: ADICIONAR SISTEMA DE RANKING
+        }
+    }
+    return this.userRepository.save(existingUser);
+  }
+  // DELETE USER --------------------------------------------------------------------------------------------
   async remove(username: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { username } });
     if (user) {

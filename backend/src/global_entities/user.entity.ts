@@ -20,12 +20,15 @@ export class Account {
   @Column({ nullable: true })
   avatar: string;
 
-// Friends info
+// Other users info
   @Column('json', { nullable: true })
   friends: string[];
 
   @Column('json', { nullable: true })
   friendRequests: string[];
+
+  @Column('json', { nullable: true })
+  blocked: string[];
 
 // User games info
   @Column('json', { nullable: true })

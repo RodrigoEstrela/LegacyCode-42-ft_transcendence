@@ -1,6 +1,9 @@
 export  type UserStats = {
-    "W/L": string;
-    "Rank": string;
-    "Achievements": string;
-    "Games Played": number;
-  };
+  "Games Played": number;
+  "Wins": number;
+  "Losses": number;
+  "Score": number;
+  "Rank": string;
+  "Achievements": string;
+};
+

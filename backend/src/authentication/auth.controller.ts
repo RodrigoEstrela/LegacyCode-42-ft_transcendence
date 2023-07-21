@@ -8,7 +8,7 @@ export class AuthController {
 
   @Post('signup')
   async createUser(@Body() createAuthDto: AuthDto) {
-    const { username, email, password, friends } = createAuthDto;
+    const { username, email, password} = createAuthDto;
 
     // Check if a user with the same name or email already exists
     const userExists = await this.authService.checkUserExists(username, email);
@@ -21,7 +21,7 @@ export class AuthController {
 
     // If no user with the same name or email exists, create the user
     console.log('Received create user request');
-    const userCreated = await this.authService.createUser(username, email, password, friends);
+    const userCreated = await this.authService.createUser(username, email, password);
     console.log(userCreated);
     return userCreated;
   }
