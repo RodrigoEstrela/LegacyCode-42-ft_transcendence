@@ -51,7 +51,7 @@ export class UserController {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
 
-        return await this.userService.updateStats(username, command, value);
+        return await this.userService.manageStatsAndUsers(username, command, value);
     }
     
     @Delete(':username')

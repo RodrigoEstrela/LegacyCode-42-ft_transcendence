@@ -25,10 +25,13 @@ export class Account {
   friends: string[];
 
   @Column('json', { nullable: true })
-  friendRequests: string[];
+  friendRequestsReceived: string[];
 
   @Column('json', { nullable: true })
-  blocked: string[];
+  friendRequestsSent: string[];
+
+  @Column('json', { nullable: true })
+  blockedUsers: string[];
 
 // User games info
   @Column('json', { nullable: true })

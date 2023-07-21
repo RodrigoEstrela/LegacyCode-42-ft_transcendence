@@ -6,8 +6,9 @@ export default class UserDto {
     readonly email: string;
     readonly password: string;
     readonly friends: string[];
-    readonly friendRequests: string[];
-    readonly blocked: string[];
+    readonly friendRequestsReceived: string[];
+    readonly friendRequestsSent: string[];
+    readonly blockedUsers: string[];
     readonly stats: UserStats;
     readonly history: string[];
     readonly status: string;

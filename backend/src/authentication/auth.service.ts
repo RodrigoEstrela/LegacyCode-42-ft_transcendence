@@ -12,10 +12,6 @@ export class AuthService {
   ) {}
 
   async createUser(username: string, email: string, password: string): Promise<Auth> {
-    const user = new Auth();
-    user.username = username;
-    user.email = email;
-    user.password = password;
     // Set initial values for stats
     const initialStats: UserStats = {
       "Games Played": 0,
@@ -25,7 +21,19 @@ export class AuthService {
       "Rank": "",
       "Achievements": "",
     };
+    
+    const user = new Auth();
+    user.username = username;
+    user.email = email;
+    user.password = password;
+    user.avatar = "";
+    user.friends = [];
+    user.friendRequestsReceived = [];
+    user.friendRequestsSent = [];
+    user.blockedUsers = [];
     user.stats = initialStats;
+    user.history = [];
+    user.status = "online";
     return await this.authRepository.save(user);
   }
 

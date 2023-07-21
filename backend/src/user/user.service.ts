@@ -40,12 +40,12 @@ export class UserService {
     return this.userRepository.save(existingUser);
   }
   // UPDATE USER STATS --------------------------------------------------------------------------------------
-  async updateStats(username: string, command: string, value: string): Promise<User> {
+  async manageStatsAndUsers(username: string, command: string, value: string): Promise<User> {
     const existingUser = await this.userRepository.findOne({ where: { username } });
     if (!existingUser) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    // TODO: Be ready for JSON payload for game history
+    // TODO: ACEITAR JSON COM A INFO DO JOGO PARA ADICIONAR A GAME HISTORY
     // Update the user with the provided data
     switch (command) {
       case 'game':
@@ -62,6 +62,105 @@ export class UserService {
           }
           // TODO: ADICIONAR SISTEMA DE RANKING
         }
+        break;
+      case 'blockuser':
+        const targetUser5 = await this.userRepository.findOne({ where: { username: value } });
+        if (!targetUser5) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        if (existingUser.blockedUsers.includes(value)) {
+          throw new HttpException('User is already blocked', HttpStatus.CONFLICT);
+        }
+        existingUser.blockedUsers.push(value);
+        this.userRepository.save(targetUser5);
+        break;
+      case 'addfriend':
+        const targetUser = await this.userRepository.findOne({ where: { username: value } });
+        if (!targetUser) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        if (existingUser.friends.includes(value)) {
+          throw new HttpException('User is already your friend', HttpStatus.CONFLICT);
+        }
+        if (existingUser.friendRequestsSent.includes(value)) {
+          throw new HttpException('Friend request already sent', HttpStatus.CONFLICT);
+        }
+        if (targetUser.blockedUsers.includes(username)) {
+          throw new HttpException('User has blocked you', HttpStatus.CONFLICT);
+        }
+        if (existingUser.blockedUsers.includes(value)) {
+          throw new HttpException('You have blocked this user', HttpStatus.CONFLICT);
+        }
+        targetUser.friendRequestsReceived.push(username);
+        existingUser.friendRequestsSent.push(value);
+        this.userRepository.save(targetUser);
+        break;
+      case 'acceptfriend':
+        const targetUser2 = await this.userRepository.findOne({ where: { username: value } });
+        if (!targetUser2) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        if (!existingUser.friendRequestsReceived.includes(value)) {
+          throw new HttpException('No friend request received from this user', HttpStatus.CONFLICT);
+        }
+        if (existingUser.friends.includes(value)) {
+          throw new HttpException('User is already your friend', HttpStatus.CONFLICT);
+        }
+        if (targetUser2.blockedUsers.includes(username)) {
+          targetUser2.friendRequestsSent = targetUser2.friendRequestsSent.filter((user: string) => user !== username);
+          existingUser.friendRequestsReceived = existingUser.friendRequestsReceived.filter((user: string) => user !== value);
+          this.userRepository.save(targetUser2);
+          this.userRepository.save(existingUser);
+          throw new HttpException('User has blocked you', HttpStatus.CONFLICT);
+        }
+        targetUser2.friendRequestsSent = targetUser2.friendRequestsSent.filter((user: string) => user !== username);
+        existingUser.friendRequestsReceived = existingUser.friendRequestsReceived.filter((user: string) => user !== value);
+        targetUser2.friends.push(username);
+        existingUser.friends.push(value);
+        this.userRepository.save(targetUser2);
+        break;
+      case 'removefriendrequest':
+        if (!existingUser.friendRequestsSent.includes(value)) {
+          throw new HttpException('No friend request sent to this user', HttpStatus.CONFLICT);
+        }
+        const targetUser6 = await this.userRepository.findOne({ where: { username: value } });
+        if (!targetUser6) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        targetUser6.friendRequestsReceived = targetUser6.friendRequestsReceived.filter((user: string) => user !== username);
+        existingUser.friendRequestsSent = existingUser.friendRequestsSent.filter((user: string) => user !== value);
+        this.userRepository.save(targetUser6);
+        break;
+      case 'rejectfriendrequest':
+        const targetUser3 = await this.userRepository.findOne({ where: { username: value } });
+        if (!targetUser3) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        if (!existingUser.friendRequestsReceived.includes(value)) {
+          throw new HttpException('No friend request received from this user', HttpStatus.CONFLICT);
+        }
+        targetUser3.friendRequestsSent = targetUser3.friendRequestsSent.filter((user: string) => user !== username);
+        existingUser.friendRequestsReceived = existingUser.friendRequestsReceived.filter((user: string) => user !== value);
+        this.userRepository.save(targetUser3);
+        break;
+      case 'removefriend':
+        const targetUser4 = await this.userRepository.findOne({ where: { username: value } });
+        if (!targetUser4) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+        if (!existingUser.friends.includes(value)) {
+          throw new HttpException('User is not your friend', HttpStatus.CONFLICT);
+        }
+        targetUser4.friends = targetUser4.friends.filter((user: string) => user !== username);
+        existingUser.friends = existingUser.friends.filter((user: string) => user !== value);
+        this.userRepository.save(targetUser4);
+        break;
+      case 'unblockuser':
+        if (!existingUser.blockedUsers.includes(value)) {
+          throw new HttpException('User is not blocked', HttpStatus.CONFLICT);
+        }
+        existingUser.blockedUsers = existingUser.blockedUsers.filter((user: string) => user !== value);
+        break;
     }
     return this.userRepository.save(existingUser);
   }
