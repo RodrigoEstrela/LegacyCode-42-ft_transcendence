@@ -4,6 +4,7 @@ import { Auth, AuthModule, AuthController, AuthService } from './authentication'
 import { User, UserModule, UserController, UserService } from './user';
 import { config } from 'dotenv';
 import { ChatGateway }  from './chat/app.gateway';
+import InitialDatabaseSeed from './seeding/seeds/initalSeed';
 
 config();
 
@@ -18,6 +19,7 @@ config();
 		database: process.env.POSTGRES_DB,
 		synchronize: true,
 		autoLoadEntities: true,
+		
 	}),
 	TypeOrmModule.forFeature([Auth]),
 	AuthModule,

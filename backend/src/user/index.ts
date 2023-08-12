@@ -1,4 +1,4 @@
-export { default as User } from "../global_entities/user.entity";
+export { default as User } from "../entities/user.entity";
 export { default as UserModule } from "./user.module";
 export { default as UserController } from "./user.controller";
 export { default as UserService } from "./user.service";
