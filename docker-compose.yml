@@ -45,21 +45,21 @@ services:
    networks:
      - ${NETWORK}
 
-  frontend:
-    container_name: ${FRONTEND_CONTAINER}
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - ${FRONTEND_PORT_LOCAL}:${FRONTEND_PORT_DOCKER}
-    volumes:
-      - ./frontend:/app
-      - ./volumes/frontend-build:/usr/src/app/dist
-    networks:
-      - ${NETWORK}
-    restart: always
-    env_file:
-      - .env
+  # frontend:
+  #   container_name: ${FRONTEND_CONTAINER}
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - ${FRONTEND_PORT_LOCAL}:${FRONTEND_PORT_DOCKER}
+  #   volumes:
+  #     - ./frontend:/app
+  #     - ./volumes/frontend-build:/usr/src/app/dist
+  #   networks:
+  #     - ${NETWORK}
+  #   restart: always
+  #   env_file:
+  #     - .env
 
 networks:
   ft_transcendence:

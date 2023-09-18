@@ -4,7 +4,7 @@ import { Auth, AuthModule, AuthController, AuthService } from './authentication'
 import { User, UserModule, UserController, UserService } from './user';
 import { config } from 'dotenv';
 import { ChatGateway }  from './chat/app.gateway';
-import InitialDatabaseSeed from './seeding/seeds/initalSeed';
+// import InitialDatabaseSeed from './seeding/seeds/initalSeed';
 
 config();
 
