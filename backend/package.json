@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "db:seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -28,6 +29,7 @@
     "@nestjs/typeorm": "^10.0.0",
     "@nestjs/websockets": "^10.1.0",
     "@types/express-session": "^1.17.7",
+    "@types/faker": "^6.6.9",
     "dotenv": "^16.3.1",
     "ejs": "3.1.9",
     "express": "^4.18.2",
@@ -37,9 +39,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "socket.io": "^4.4.1",
-    "typeorm": "0.3.17",
-    "typeorm-seeding": "^1.6.1",
-    "@types/faker": "^6.6.9"
+    "typeorm": "^0.3.17",
+    "typeorm-seeding": "^1.6.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",

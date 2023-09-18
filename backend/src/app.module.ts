@@ -19,7 +19,6 @@ config();
 		database: process.env.POSTGRES_DB,
 		synchronize: true,
 		autoLoadEntities: true,
-		
 	}),
 	TypeOrmModule.forFeature([Auth]),
 	AuthModule,
