@@ -14,10 +14,7 @@ export class UserFactory extends Factory<User> {
 	const wins = faker.number.int(7);
 	const losses = faker.number.int(7);
 	const gamesPlayed = wins + losses;
-	var score = (wins * 10) - (losses * 5);
-	if (score < 0) {
-	score = 0;
-	}
+	var score = (wins * 10) - (losses * 5); if (score < 0) {score = 0;}
 	const tmp_stats: UserStats = {
 	'Games Played': gamesPlayed,
 	'Wins': wins,
