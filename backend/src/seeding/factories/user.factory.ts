@@ -3,7 +3,7 @@
 // Typeorm factory, see: [https://www.npmjs.com/package/@jorgebodega/typeorm-factory]
 
 import { faker } from "@faker-js/faker";
-import { Account } from '../../entities/user.entity';
+import { User } from '../../entities';
 import { UserStats } from '../../user';
 import { Factory, FactorizedAttrs } from '@jorgebodega/typeorm-factory'
 import { postgresDataSource } from '../dataSource'
@@ -17,10 +17,10 @@ const tmp_stats: UserStats = {
   "Achievements": "",
 }
 
-export class UserFactory extends Factory<Account> {
-  protected entity = Account;
+export class UserFactory extends Factory<User> {
+  protected entity = User;
   protected dataSource = postgresDataSource;
-  protected attrs(): FactorizedAttrs<Account> {
+  protected attrs(): FactorizedAttrs<User> {
     return {
 			username: faker.internet.userName(),
 			email: faker.internet.email(),
