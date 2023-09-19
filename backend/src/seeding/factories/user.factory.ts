@@ -7,24 +7,30 @@ import { UserStats } from '../../user';
 import { Factory, FactorizedAttrs } from '@jorgebodega/typeorm-factory'
 import { postgresDataSource } from '../dataSource'
 
-const tmp_stats: UserStats = {
-	"Games Played": faker.number.int(),
-	"Wins": faker.number.int(8),
-	"Losses": faker.number.int(5),
-	"Score": faker.number.int(5),
-	"Rank": "",
-	"Achievements": "",
-}
-
 export class UserFactory extends Factory<User> {
   protected entity = User;
   protected dataSource = postgresDataSource;
   protected attrs(): FactorizedAttrs<User> {
+	const wins = faker.number.int(7);
+	const losses = faker.number.int(7);
+	const gamesPlayed = wins + losses;
+	var score = (wins * 10) - (losses * 5);
+	if (score < 0) {
+	score = 0;
+	}
+	const tmp_stats: UserStats = {
+	'Games Played': gamesPlayed,
+	'Wins': wins,
+	'Losses': losses,
+	'Score': score,
+	'Rank': "",
+	'Achievements': "",
+	};
     return {
 			username: faker.internet.userName(),
 			email: faker.internet.email(),
 			password: faker.internet.password(7),
-		  stats: tmp_stats,
+		  	stats: tmp_stats,
 			avatar: "",
 			friends: [],
 			friendRequestsReceived: [],
