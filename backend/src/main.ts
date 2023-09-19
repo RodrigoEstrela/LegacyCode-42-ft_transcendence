@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { config } from 'dotenv';
-import { postgresDataSource } from 'src/seeding/dataSource'
 
 config();
 async function bootstrap() {

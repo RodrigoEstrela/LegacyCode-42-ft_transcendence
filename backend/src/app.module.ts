@@ -40,7 +40,7 @@ export class AppModule {
 	    // create will save to db
 	    // new UserFactory().makeMany(10);
 			dataSource.transaction(async manager => {
-		    let u = await new UserFactory().make();
+			  let u = await new UserFactory().make();
 				manager.save(u);
 			});
 	    console.log("Success");
