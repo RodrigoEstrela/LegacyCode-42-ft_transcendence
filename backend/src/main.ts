@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { config } from 'dotenv';
-import { runSeeder, Seeder } from 'typeorm-seeding';
+// import { runSeeder, Seeder } from 'typeorm-seeding';
 // import InitialDatabaseSeed from './seeding/seeds/initalSeed';
 
 config();

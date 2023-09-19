@@ -9,11 +9,11 @@
  **/
 
 import { Connection } from "typeorm"
-import { Factory, Seeder } from "typeorm-seeding";
+// import { Factory, Seeder } from "typeorm-seeding";
 import { User } from "../../entities";
 
-export default class InitialDatabaseSeed implements Seeder {
-  public async run(factory: Factory, connection: Connection): Promise<any> {
-  	await factory(User)().createMany(7);
-  }
-}
+// export default class InitialDatabaseSeed implements Seeder {
+//   public async run(factory: Factory, connection: Connection): Promise<any> {
+//   	await factory(User)().createMany(7);
+//   }
+// }
