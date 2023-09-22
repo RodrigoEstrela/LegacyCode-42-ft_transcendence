@@ -1,19 +1,12 @@
-// Pulga review 18/09/22 -> NOT OK
-/**
- * Review
- * 1.
- * Should declare the class function as described on the documentation
- * 	See: [https://www.npmjs.com/package/typeorm-seeding#seeder]
- * 2.
- * Must import Connection from typeorm
- **/
-
-import { Connection } from "typeorm"
-// import { Factory, Seeder } from "typeorm-seeding";
+import { Connection, DataSource } from "typeorm"
+import { Seeder } from "@jorgebodega/typeorm-seeding";
+import { Factory } from "@jorgebodega/typeorm-factory";
+import { UserFactory } from "../factories/user.factory";
 import { User } from "../../entities";
+import { postgresDataSource } from "../dataSource";
 
-// export default class InitialDatabaseSeed implements Seeder {
-//   public async run(factory: Factory, connection: Connection): Promise<any> {
-//   	await factory(User)().createMany(7);
-//   }
-// }
+export default class InitialDatabaseSeed implements Seeder {
+   async run(dataSource: DataSource) {
+  	await new UserFactory().createMany(10);
+  }
+}
