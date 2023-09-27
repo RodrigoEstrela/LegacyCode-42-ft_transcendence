@@ -1,4 +1,4 @@
-import { Connection, DataSource } from "typeorm"
+import { DataSource } from "typeorm"
 import { Seeder } from "@jorgebodega/typeorm-seeding";
 import { Factory } from "@jorgebodega/typeorm-factory";
 import { UserFactory } from "../factories/user.factory";

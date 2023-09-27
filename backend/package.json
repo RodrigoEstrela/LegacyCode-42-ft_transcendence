@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed:run": "typeorm-seeding seed -d src/seeding/dataSource.ts"
+    "seed:run": "typeorm-seeding seed -d seeding/dataSource.ts"
   },
   "dependencies": {
     "@jorgebodega/typeorm-factory": "^1.4.0",
