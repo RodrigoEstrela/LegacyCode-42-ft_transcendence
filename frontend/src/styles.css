@@ -1,0 +1,61 @@
+.messages-container {
+    /* Add styles to the container to make it scrollable */
+    max-height: 500px; /* Set the maximum height of the container to enable scrolling */
+    overflow-y: auto; /* Enable vertical scrolling when the content overflows the container */
+
+    /* Add some padding and margin for better spacing */
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 1000px;
+}
+
+/* Common styles for all message wrappers */
+.message-wrapper {
+    /* Add margin for spacing */
+    /*margin-bottom: 5px;*/
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+}
+
+/* Style for message wrapper sent by the user */
+.message-wrapper.self {
+    /* Align message wrappers to the right */
+    text-align: right;
+    background: #ff7079;
+    margin-left: 50%;
+}
+
+/* Style for message wrapper received from others */
+.message-wrapper.others {
+    /* Align message wrappers to the left */
+    text-align: left;
+    background: #7ae4ff;
+    max-width: 40%;
+    margin-right: 50%;
+}
+
+/* Style for each message inside the wrapper */
+.message {
+    /* Add padding for spacing */
+    padding: 5px 10px;
+
+    /*Set font size and weight */
+    font-size: 18px;
+    font-weight: 400;
+
+    /* Add rounded corners to the message boxes */
+    border-radius: 5px;
+
+    /* Set a fixed width for the message box */
+    display: inline-block;
+}
+
+.message-label {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
