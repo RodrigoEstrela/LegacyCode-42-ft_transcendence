@@ -64,6 +64,10 @@ export class UserService {
         }
         break;
       case 'blockuser':
+        if (username == value)
+        {
+          throw new HttpException("That's you!", HttpStatus.CONFLICT);
+        }
         const targetUser5 = await this.userRepository.findOne({ where: { username: value } });
         if (!targetUser5) {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -75,6 +79,10 @@ export class UserService {
         this.userRepository.save(targetUser5);
         break;
       case 'addfriend':
+        if (username == value)
+        {
+          throw new HttpException("That's you!", HttpStatus.CONFLICT);
+        }
         const targetUser = await this.userRepository.findOne({ where: { username: value } });
         if (!targetUser) {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -96,6 +104,10 @@ export class UserService {
         this.userRepository.save(targetUser);
         break;
       case 'acceptfriend':
+        if (username == value)
+        {
+          throw new HttpException("That's you!", HttpStatus.CONFLICT);
+        }
         const targetUser2 = await this.userRepository.findOne({ where: { username: value } });
         if (!targetUser2) {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -120,6 +132,10 @@ export class UserService {
         this.userRepository.save(targetUser2);
         break;
       case 'removefriendrequest':
+        if (username == value)
+        {
+          throw new HttpException("That's you!", HttpStatus.CONFLICT);
+        }
         if (!existingUser.friendRequestsSent.includes(value)) {
           throw new HttpException('No friend request sent to this user', HttpStatus.CONFLICT);
         }
@@ -132,6 +148,10 @@ export class UserService {
         this.userRepository.save(targetUser6);
         break;
       case 'rejectfriendrequest':
+        if (username == value)
+        {
+          throw new HttpException("That's you!", HttpStatus.CONFLICT);
+        }
         const targetUser3 = await this.userRepository.findOne({ where: { username: value } });
         if (!targetUser3) {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -144,6 +164,10 @@ export class UserService {
         this.userRepository.save(targetUser3);
         break;
       case 'removefriend':
+        if (username == value)
+        {
+          throw new HttpException("That's you!", HttpStatus.CONFLICT);
+        }
         const targetUser4 = await this.userRepository.findOne({ where: { username: value } });
         if (!targetUser4) {
           throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -156,6 +180,10 @@ export class UserService {
         this.userRepository.save(targetUser4);
         break;
       case 'unblockuser':
+        if (username == value)
+        {
+          throw new HttpException("That's you!", HttpStatus.CONFLICT);
+        }
         if (!existingUser.blockedUsers.includes(value)) {
           throw new HttpException('User is not blocked', HttpStatus.CONFLICT);
         }
@@ -165,15 +193,31 @@ export class UserService {
     return this.userRepository.save(existingUser);
   }
   // DELETE USER --------------------------------------------------------------------------------------------
-  async remove(username: string): Promise<User> {
+  async remove(username: string): Promise<User | null> {
     const user = await this.userRepository.findOne({ where: { username } });
-    if (user) {
-      await this.userRepository.remove(user);
-      return user;
+  
+    if (!user) {
+      return null; // User not found, nothing to remove
     }
-    return null;
+  
+    // Check if the user has friends
+    if (user.friends && user.friends.length > 0) {
+      console.log(user.friends)
+  
+      for (const friend of user.friends) {
+        // Remove the user from the friend's friends list
+        const target = await this.userRepository.findOne({ where: { username: friend}})
+        target.friends = target.friends.filter((user: string) => user !== username);
+        await this.userRepository.save(target);
+      }
+    }
+  
+    // Remove the user from the database
+    await this.userRepository.remove(user);
+  
+    return user;
   }
-
+  
   async userExists(username: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { username } });
     return !!user;
