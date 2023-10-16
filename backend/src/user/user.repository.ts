@@ -8,8 +8,8 @@ export class UserRepository extends Repository<User> {
         const user = this.create(userDto);
         return this.save(user); // Save the user using the repository's save() method
       }
-      
-
+      // write the findOne function
+    
   // Additional repository methods...
 }
 

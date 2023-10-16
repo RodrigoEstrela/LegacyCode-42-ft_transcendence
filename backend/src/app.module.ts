@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { Auth, AuthModule, AuthController, AuthService } from './authentication';
+import { AuthModule, AuthController, AuthService } from './authentication';
 import { User, UserModule, UserController, UserService } from './user';
 import { config } from 'dotenv';
 import { ChatGateway }  from './chat/app.gateway';
@@ -21,7 +21,7 @@ config();
 		synchronize: true,
 		autoLoadEntities: true,
 	}),
-	TypeOrmModule.forFeature([Auth]),
+	TypeOrmModule.forFeature([User]),
 	AuthModule,
 	TypeOrmModule.forFeature([User]),
 	UserModule,

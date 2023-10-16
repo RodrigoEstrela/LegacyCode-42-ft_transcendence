@@ -1,2 +1,2 @@
 id,username,email,password,avatar,friends,friendRequestsReceived,friendRequestsSent,blockedUsers,stats,history,status
-10,User10,Kadin.Barton49@gmail.com,"""NHy8KhR""","","[""User1"",""User2"",""User3""]",[],[],[],"{""Games Played"":5,""Wins"":3,""Losses"":2,""Score"":20,""Rank"":"""",""Achievements"":""""}",[],"""online"""
+1000,User10,Kadin.Barton49@gmail.com,"""NHy8KhR""","","[""User1"",""User2"",""User3""]",[],[],[],"{""Games Played"":5,""Wins"":3,""Losses"":2,""Score"":20,""Rank"":"""",""Achievements"":""""}",[],"""online"""

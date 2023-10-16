@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Auth } from '.';
+import { Repository, getManager } from 'typeorm';
+import { User } from '.';
 import { UserStats } from '../user';
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(Auth)
-    private readonly authRepository: Repository<Auth>,
+    @InjectRepository(User)
+    private readonly authRepository: Repository<User>,
   ) {}
 
-  async createUser(username: string, email: string, password: string): Promise<Auth> {
+  async createUser(username: string, email: string, password: string): Promise<User> {
+    // const entityManager = getManager();
+    // const maxIdUser = await entityManager.query('SELECT MAX(id) FROM user');
+    // const newId = maxIdUser[0].max + 1;
     // Set initial values for stats
     const initialStats: UserStats = {
       "Games Played": 0,
@@ -22,7 +26,7 @@ export class AuthService {
       "Achievements": "",
     };
     
-    const user = new Auth();
+    const user = new User();
     user.username = username;
     user.email = email;
     user.password = password;
@@ -43,6 +47,12 @@ export class AuthService {
     });
     return !!user;
   }
+
+  getHello(request: Request): string {
+    console.log("d3efewfwe");
+    return 'WTF ' + request;
+  }
+
 }
 
 export default AuthService;
