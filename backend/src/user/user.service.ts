@@ -1,8 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
-import { User } from '.';
+// import { User } from '.';
+import { default as User } from "../entities/user.entity";
 
 @Injectable()
 export class UserService {
@@ -19,6 +19,11 @@ export class UserService {
   async findOne(username: string): Promise<User> {
     return this.userRepository.findOne({ where: { username } });
   }
+
+  async findById(id: number): Promise<User> {
+    return this.userRepository.findOne({ where: { id } });
+  }
+
   // UPDATE USER --------------------------------------------------------------------------------------------
   async update(username: string, updateUserDto: Partial<User>): Promise<User> {
     const existingUser = await this.userRepository.findOne({ where: { username } });
@@ -195,15 +200,15 @@ export class UserService {
   // DELETE USER --------------------------------------------------------------------------------------------
   async remove(username: string): Promise<User | null> {
     const user = await this.userRepository.findOne({ where: { username } });
-  
+
     if (!user) {
       return null; // User not found, nothing to remove
     }
-  
+
     // Check if the user has friends
     if (user.friends && user.friends.length > 0) {
       console.log(user.friends)
-  
+
       for (const friend of user.friends) {
         // Remove the user from the friend's friends list
         const target = await this.userRepository.findOne({ where: { username: friend}})
@@ -211,18 +216,17 @@ export class UserService {
         await this.userRepository.save(target);
       }
     }
-  
+
     // Remove the user from the database
     await this.userRepository.remove(user);
-  
+
     return user;
   }
-  
+
   async userExists(username: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { username } });
     return !!user;
   }
-  
 }
 
 export default UserService;

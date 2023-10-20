@@ -1,22 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getManager } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from '.';
 import { UserStats } from '../user';
-import { UserService } from "../user/user.service";
+import {response, Response} from "express";
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private readonly authRepository: Repository<User>,
+      @InjectRepository(User)
+      private readonly authRepository: Repository<User>,
   ) {}
 
   async createUser(username: string, email: string, password: string): Promise<User> {
-    // const entityManager = getManager();
-    // const maxIdUser = await entityManager.query('SELECT MAX(id) FROM user');
-    // const newId = maxIdUser[0].max + 1;
-    // Set initial values for stats
     const initialStats: UserStats = {
       "Games Played": 0,
       "Wins": 0,
@@ -25,7 +21,7 @@ export class AuthService {
       "Rank": "",
       "Achievements": "",
     };
-    
+
     const user = new User();
     user.username = username;
     user.email = email;
@@ -48,9 +44,25 @@ export class AuthService {
     return !!user;
   }
 
-  getHello(request: Request): string {
-    console.log("d3efewfwe");
-    return 'WTF ' + request;
+  async login(username: string, password: string, email: string): Promise<User> {
+    const user = await this.authRepository.findOne({where: [{ username }],});
+    if (user && user.password === password) {
+      console.log("Welcome back!")
+      console.log(user);
+      return user;
+    }
+    return null;
+  }
+
+  async getUserById(id: number): Promise<User> {
+    const user = await this.authRepository.findOne({
+      where: [{ id }],
+    });
+    if (user) {
+      console.log("User found!")
+      return user;
+    }
+    return null;
   }
 
 }
