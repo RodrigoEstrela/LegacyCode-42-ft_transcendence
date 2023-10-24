@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import { AuthModule, AuthController, AuthService } from './authentication';
 import { User, UserModule, UserController, UserService } from './user';
 import { config } from 'dotenv';
-import { ChatGateway }  from './chat/app.gateway';
+import { ChatGateway, Groupchat, GroupchatModule, GroupchatController, GroupchatService }  from './chat';
 // import { UserFactory } from "src/seeding/factories/user.factory"
 
 config();
@@ -25,32 +25,12 @@ config();
 	AuthModule,
 	TypeOrmModule.forFeature([User]),
 	UserModule,
+  	TypeOrmModule.forFeature([Groupchat]),
+	GroupchatModule,
 ],
-  controllers: [AuthController, UserController],
-  providers: [AuthService, UserService, ChatGateway],
+  controllers: [AuthController, UserController, GroupchatController],
+  providers: [AuthService, UserService, ChatGateway, GroupchatService],
 })
 
 export class AppModule {}
 
-// export class AppModule {
-// 	// // Commit changes to DB:
-// 	// // See: [https://docs.nestjs.com/techniques/database]
-// 	constructor(dataSource: DataSource) {
-// 	  try {
-// 	    // // Generate one factory entry, you can create more like this:
-// 	    // // make will not save to db
-// 	    // // create will save to db
-// 	    // // new UserFactory().makeMany(10);
-// 			dataSource.transaction(async manager => {
-// 			  let u = await new UserFactory().makeMany(10);
-// 				manager.save(u);
-// 			});
-// 	    console.log("Success");
-// 	  } catch (err) {
-// 	    console.log(err);
-// 	    console.log("Failed");
-// 	  } finally {
-// 	    console.log("Continue to start app...")
-// 	  }
-// 	}
-// }

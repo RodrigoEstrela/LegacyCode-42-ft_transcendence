@@ -43,6 +43,9 @@ export class Account {
   @Column('json', { nullable: true })
   status: string;
 
+  @Column('json', {nullable: true})
+  socketID: string;
+
 }
 
 export default Account;

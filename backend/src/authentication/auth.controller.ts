@@ -30,10 +30,6 @@ export class AuthController {
 	@UseGuards(FortyTwoAuthGuard)
 	@Get('42/callback')
 	callBack(@Req() request: Request, @Res() response: Response): void {
-		console.log("username: " + request['username']);
-		console.log("id: " + request['id']);
-		console.log("email: " + request['email']);
-
 		const sessionID =  request['username'];
 		console.log("sessionID after login: " + sessionID);
 

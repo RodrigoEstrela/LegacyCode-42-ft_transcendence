@@ -1,14 +1,13 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-// import { User } from '.';
 import { default as User } from "../entities/user.entity";
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+      @InjectRepository(User)
+      private readonly userRepository: Repository<User>,
   ) {}
 
   // GET ALL USERS ------------------------------------------------------------------------------------------
@@ -227,6 +226,23 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { username } });
     return !!user;
   }
+
+  async getSocketId(username: string) {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (user)
+      return user.socketID;
+    return null;
+  }
+
+  async setSocketId(username: string, socketID: string) {
+	  	const user = await this.userRepository.findOne({ where: { username } });
+	if (user) {
+	  user.socketID = socketID;
+	  return this.userRepository.save(user);
+	}
+	return null;
+  }
+
 }
 
 export default UserService;

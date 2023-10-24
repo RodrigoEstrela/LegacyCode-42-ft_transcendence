@@ -12,4 +12,5 @@ export default class UserDto {
     readonly stats: UserStats;
     readonly history: string[];
     readonly status: string;
+    readonly socketID: string;
 }
