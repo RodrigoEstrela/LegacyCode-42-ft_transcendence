@@ -12,13 +12,17 @@ interface MessageData {
   receiverName: string;
 }
 
+export function createCookie(name: string, value: string, options: any = {}) {
+  const serialized = cookie.serialize(name, value, options);
+  return serialized;
+}
+
+
 @WebSocketGateway({ cors: { origin: '*' } })
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
   constructor(private readonly userService: UserService) {}
-
-
 
   private connectedClients = new Map<string, any>();
 
@@ -34,10 +38,8 @@ export class ChatGateway {
     if (typeof cookieHeader === 'string') {
       const cookieData = JSON.parse(cookieHeader);
       const authCookie = cookieData.authCookie1;
-      if (authCookie == "rdas-nev")
-        this.userService.setSocketId(authCookie, client.id);
-      else
-        this.userService.setSocketId("User4", client.id);
+      console.log("set socket id for: " + authCookie);
+      this.userService.setSocketId(authCookie, client.id);
     }
 
     this.connectedClients.set(client.id, client);

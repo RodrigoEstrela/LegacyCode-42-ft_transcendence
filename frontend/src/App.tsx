@@ -124,7 +124,10 @@ const UserProfile: React.FC = () => {
         // Fetch user profile data from the backend
         const cookieData = cookie.parse(document.cookie);
         const user = cookieData['authCookie1'];
-        fetch('http://localhost:5000/user/' + user) // Replace with the actual API endpoint
+        fetch('http://localhost:5000/user/' + user, {
+            method: 'GET',
+            credentials: 'include',
+        }) // Replace with the actual API endpoint
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -151,6 +154,90 @@ const UserProfile: React.FC = () => {
     );
 };
 
+
+const Login = () => {
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
+
+    const handleLogin = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+                credentials: 'include',
+				referrer: '',
+				mode: "cors",
+            });
+
+            if (response.ok) {
+                console.log("facil");
+            } else {
+                console.log("epa wtf");
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+        }
+    };
+
+    return (
+        <div>
+            <h2>Login</h2>
+            <form>
+                <div>
+                    <label htmlFor="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleInputChange}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="email">E-mail</label>
+                    <input
+                        type="text"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        placeholder="rodrigo@.antonio"
+                        onChange={handleInputChange}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                    />
+                </div>
+                <button type="button" onClick={handleLogin}>
+                    Log In
+                </button>
+            </form>
+        </div>
+    );
+};
+
+
+
 const App: React.FC = () => {
     return (
         <BrowserRouter>
@@ -173,6 +260,7 @@ const App: React.FC = () => {
                     <Route path="/chat" element={<ChatRoom />} />
                     <Route path="/user" element={<UserProfile />} />
                     <Route path="/chat/dm/:id" element={<ChatRoom />} />
+                    <Route path="/auth/login" element={<Login />} />
                 </Routes>
             </div>
         </BrowserRouter>

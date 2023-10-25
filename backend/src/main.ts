@@ -15,11 +15,11 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: 'http://localhost:3000',
     credentials: true,
     methods: ['GET', 'POST', 'DELETE', 'PATCH', 'PUT'],
-    allowedHeaders : ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-    exposedHeaders : ['Set-Cookie'],
+    allowedHeaders : ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization',/* 'Credentials'*/],
+    exposedHeaders : [],
   });
 
   await app.listen(parseInt(process.env.BACKEND_PORT_DOCKER));

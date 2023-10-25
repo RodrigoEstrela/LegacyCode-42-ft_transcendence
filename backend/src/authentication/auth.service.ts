@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '.';
 import { UserStats } from '../user';
 import {response, Response} from "express";
+import Account from "../entities/user.entity";
 
 @Injectable()
 export class AuthService {
@@ -37,21 +38,18 @@ export class AuthService {
     return await this.authRepository.save(user);
   }
 
-  async checkUserExists(username: string, email: string): Promise<boolean> {
-    const user = await this.authRepository.findOne({
-      where: [{ username }, { email }],
-    });
-    return !!user;
+   async checkUserExists(username: string): Promise<boolean> {
+    const user = await this.authRepository.exist({where: [{ username }],});
+    return user == true;
   }
 
-  async login(username: string, password: string, email: string): Promise<User> {
+  async login(username: string, password: string, email: string): Promise<boolean> {
     const user = await this.authRepository.findOne({where: [{ username }],});
-    if (user && user.password === password) {
+    if (user && user.password == password && user.email == email) {
       console.log("Welcome back!")
-      console.log(user);
-      return user;
+      return true;
     }
-    return null;
+    return false;
   }
 
   async getUserById(id: number): Promise<User> {
