@@ -4,8 +4,8 @@ import { DataSource } from 'typeorm';
 import { AuthModule, AuthController, AuthService } from './authentication';
 import { User, UserModule, UserController, UserService } from './user';
 import { config } from 'dotenv';
-import { ChatGateway, Groupchat, GroupchatModule, GroupchatController, GroupchatService }  from './chat';
-// import { UserFactory } from "src/seeding/factories/user.factory"
+import { ChatGateway, Groupchat, GroupchatModule, GroupchatController, GroupchatService,
+		Message, MessageModule, MessageController, MessageService}  from './chat';
 
 config();
 
@@ -27,9 +27,11 @@ config();
 	UserModule,
   	TypeOrmModule.forFeature([Groupchat]),
 	GroupchatModule,
+  	TypeOrmModule.forFeature([Message]),
+	MessageModule,
 ],
-  controllers: [AuthController, UserController, GroupchatController],
-  providers: [AuthService, UserService, ChatGateway, GroupchatService],
+  controllers: [AuthController, UserController, GroupchatController, MessageController],
+  providers: [AuthService, UserService, ChatGateway, GroupchatService, MessageService],
 })
 
 export class AppModule {}

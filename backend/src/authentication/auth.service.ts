@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { User } from '.';
 import { UserStats } from '../user';
 import {response, Response} from "express";
-import Account from "../entities/user.entity";
 
 @Injectable()
 export class AuthService {

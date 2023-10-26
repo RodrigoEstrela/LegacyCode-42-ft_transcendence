@@ -33,6 +33,59 @@ const ChatRoom: React.FC = () => {
 
         newSocket.on('connect', () => {
             console.log('Socket.IO connection established.');
+
+                const cookieData = cookie.parse(document.cookie);
+                const senderName = cookieData['authCookie1'];
+
+                const currentURL = window.location.href;
+                const urlParts = currentURL.split('/');
+                const receiverName = urlParts[urlParts.length - 1];
+
+                // Fetch messages for the user with otherUserId
+                fetch(`http://localhost:5000/message/${senderName}/${receiverName}`)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        const messageDataArray: MessageData[] = new Array(data.length);
+
+                        // Use a for loop to iterate through the JSON array
+                        for (let i = 0; i < data.length; i++) {
+                            const item: {id: string, sender: string, receiver: string,
+                            content: string, timestamp: string} = data[i];
+
+                            // Log the item
+                            console.log('Item:', item);
+
+                            console.log('ìtem.senderId: ', item.id);
+                            const messageData: MessageData = {
+                                senderId: item.id,
+                                message: item.content,
+                                cookieData: {"ola": "ola"},
+                                senderName: item.sender,
+                                receiverName: item.receiver,
+                            };
+
+                            console.log("MessageData:" + messageData);
+
+
+                            // Set the MessageData object at the corresponding index in the array
+                            messageDataArray[i] = messageData;
+                            console.log(messageDataArray[i]);
+                        }
+
+                        setMessages(messageDataArray);
+                        // const messageData: MessageData = data as MessageData;
+                        // console.log(messageData);
+                        // setMessages(data);
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching messages:', error);
+                    });
+
         });
 
         newSocket.on('error', (errorEvent: Event) => {
@@ -55,10 +108,7 @@ const ChatRoom: React.FC = () => {
         if (socket) {
 
             const currentURL = window.location.href;
-            console.log('Current URL:', currentURL);
             const urlParts = currentURL.split('/');
-            console.log('URL Parts:', urlParts);
-            console.log(urlParts[urlParts.length - 1]);
 
             const cookieData = cookie.parse(document.cookie);
 
@@ -66,7 +116,7 @@ const ChatRoom: React.FC = () => {
                 message: inputValue,
                 senderId: socket.id,
                 cookieData,
-                senderName: "x",
+                senderName: cookieData['authCookie1'],
                 receiverName: urlParts[urlParts.length - 1],
             };
 
@@ -74,6 +124,9 @@ const ChatRoom: React.FC = () => {
         }
         setInputValue('');
     };
+
+    const cookieData = cookie.parse(document.cookie);
+    const currentUser = cookieData['authCookie1'];
 
     return (
         <div>
@@ -83,13 +136,13 @@ const ChatRoom: React.FC = () => {
                     <div
                         key={index}
                         className={
-                            socket && messageData.senderId === socket.id
+                            socket && messageData.senderName === currentUser
                                 ? 'message-wrapper self'
                                 : 'message-wrapper others'
                         }
                     >
                         <div className="message-label">
-                            {socket && messageData.senderId === socket.id ? 'You' : messageData.senderName}
+                            {socket && messageData.senderName === currentUser ? 'You' : messageData.senderName}
                         </div>
                         <div className="message">{messageData.message}</div>
                     </div>

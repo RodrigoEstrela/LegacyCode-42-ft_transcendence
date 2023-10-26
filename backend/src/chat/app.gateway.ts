@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import * as cookie from 'cookie';
 import { UserService } from "../user/user.service";
 import { User } from "../entities";
+import { MessageService, Message } from ".";
 
 interface MessageData {
   senderId: string;
@@ -22,7 +23,7 @@ export function createCookie(name: string, value: string, options: any = {}) {
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService, private messageService: MessageService) {}
 
   private connectedClients = new Map<string, any>();
 
@@ -68,22 +69,20 @@ export class ChatGateway {
 
     // Access and log the properties and their values from cookieData
     // console.log(cookieData);
-    for (const key in cookieData) {
-      console.log(`Cookie Property: ${key}, Value: ${cookieData[key]}`);
-    }
-
+    // for (const key in cookieData) {
+    //   console.log(`Cookie Property: ${key}, Value: ${cookieData[key]}`);
+    // }
     // console.log(messageData);
-
     console.log("receiverName: " + messageData.receiverName);
-
     //Send message to a specfic client by using their socketid
     const receiversocketid = await this.userService.getSocketId(messageData.receiverName);
     console.log("receiversocketid: " + receiversocketid);
 
     const receiver_socket = this.findWebSocketById(receiversocketid);
-    receiver_socket.emit('chatMessage', messageData as any);
+    if (receiver_socket)
+      receiver_socket.emit('chatMessage', messageData as any);
     client.emit('chatMessage', messageData as any);
-
+    await this.messageService.create(senderName, messageData.receiverName, message, new Date().toISOString());
 
     // Broadcast the received message to all connected clients with the sender's ID
     // this.server.emit('chatMessage', messageData as any);

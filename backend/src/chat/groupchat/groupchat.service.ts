@@ -1,8 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult, DeleteResult, getRepository } from 'typeorm';
-import { User } from '../entities';
-import { Groupchat } from '../entities';
+import { User } from '../../entities';
+import { Groupchat } from '../../entities';
 
 @Injectable()
 export class GroupchatService {

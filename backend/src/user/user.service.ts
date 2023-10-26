@@ -242,7 +242,6 @@ export class UserService {
 	}
 	return null;
   }
-
 }
 
 export default UserService;

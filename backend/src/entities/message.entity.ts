@@ -6,17 +6,18 @@ export class Message {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({nullable: false})
     sender: string;
 
-    @Column()
+    @Column( {nullable: false})
     receiver: string;
 
-    @Column()
+    @Column({nullable: false})
     content: string;
 
-    @Column()
+    @Column({nullable: true})
     timestamp: string;
+
 }
 
 export default Message;

@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { UserStats } from '../user';
 
 @Entity('user')
-export class Account {
+export class User {
 
 // User profile info
   @PrimaryGeneratedColumn()
@@ -48,4 +48,4 @@ export class Account {
 
 }
 
-export default Account;
+export default User;

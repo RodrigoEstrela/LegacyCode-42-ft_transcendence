@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Groupchat } from "../entities";
+import { Groupchat } from "../../entities";
 import { GroupchatService } from "./groupchat.service";
 import { GroupchatController } from "./groupchat.controller";
 
