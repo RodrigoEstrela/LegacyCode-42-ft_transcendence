@@ -1,13 +1,13 @@
-﻿id,username,email,password,avatar,friends,friendRequestsReceived,friendRequestsSent,blockedUsers,stats,history,status,socketID
-1000,User1,Ressie_Kozey@hotmail.com,"""3txdDH_""","",[],[],[],[],"{""Games Played"":3,""Wins"":3,""Losses"":0,""Score"":30,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1002,User2,Serena9@gmail.com,"""lfrNGIm""","",[],[],[],[],"{""Games Played"":5,""Wins"":1,""Losses"":4,""Score"":0,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1003,User3,Joanie_Crist33@hotmail.com,"""bo9o5Fg""","",[],[],[],[],"{""Games Played"":8,""Wins"":4,""Losses"":4,""Score"":20,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1004,User4,Raymundo.Aufderhar@yahoo.com,"""0H1gevW""","",[],[],[],[],"{""Games Played"":3,""Wins"":1,""Losses"":2,""Score"":0,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1005,User5,Jules_Daniel@hotmail.com,"""387cnlN""","",[],[],[],[],"{""Games Played"":10,""Wins"":6,""Losses"":4,""Score"":40,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1006,User6,Rafaela99@yahoo.com,"""M0S0iIU""","",[],[],[],[],"{""Games Played"":6,""Wins"":4,""Losses"":2,""Score"":30,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1007,User7,Celestino42@gmail.com,"""jRiCHbr""","",[],[],[],[],"{""Games Played"":6,""Wins"":5,""Losses"":1,""Score"":45,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1008,User8,Ottilie55@gmail.com,"""Qt3eXph""","",[],[],[],[],"{""Games Played"":4,""Wins"":1,""Losses"":3,""Score"":0,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1009,User9,Brenden_Emmerich57@hotmail.com,"""8aAwBbY""","",[],[],[],[],"{""Games Played"":5,""Wins"":3,""Losses"":2,""Score"":20,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1010,User10,Kadin.Barton49@gmail.com,"""NHy8KhR""","",[],[],[],[],"{""Games Played"":5,""Wins"":3,""Losses"":2,""Score"":20,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1011,User11,Maria.Maria@hotmail.com,"""ola1233""","",[],[],[],[],"{""Games Played "":10,""Wins"":6,""Losses"":4,""Score"":40,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
-1012,User12,Pedro.Pedro@hotmail.com,"""adeus1235""","",[],[],[],[],"{""Games Played "":10,""Wins"":6,""Losses"":4,""Score"":40,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123"""
+﻿id,username,email,password,avatar,friends,friendRequestsReceived,friendRequestsSent,blockedUsers,stats,history,status,socketID,groupChats
+1000,User1,Ressie_Kozey@hotmail.com,"""3txdDH_""","",[],[],[],[],"{""Games Played"":3,""Wins"":3,""Losses"":0,""Score"":30,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1002,User2,Serena9@gmail.com,"""lfrNGIm""","",[],[],[],[],"{""Games Played"":5,""Wins"":1,""Losses"":4,""Score"":0,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1003,User3,Joanie_Crist33@hotmail.com,"""bo9o5Fg""","",[],[],[],[],"{""Games Played"":8,""Wins"":4,""Losses"":4,""Score"":20,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1004,User4,Raymundo.Aufderhar@yahoo.com,"""0H1gevW""","",[],[],[],[],"{""Games Played"":3,""Wins"":1,""Losses"":2,""Score"":0,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1005,User5,Jules_Daniel@hotmail.com,"""387cnlN""","",[],[],[],[],"{""Games Played"":10,""Wins"":6,""Losses"":4,""Score"":40,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1006,User6,Rafaela99@yahoo.com,"""M0S0iIU""","",[],[],[],[],"{""Games Played"":6,""Wins"":4,""Losses"":2,""Score"":30,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1007,User7,Celestino42@gmail.com,"""jRiCHbr""","",[],[],[],[],"{""Games Played"":6,""Wins"":5,""Losses"":1,""Score"":45,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1008,User8,Ottilie55@gmail.com,"""Qt3eXph""","",[],[],[],[],"{""Games Played"":4,""Wins"":1,""Losses"":3,""Score"":0,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1009,User9,Brenden_Emmerich57@hotmail.com,"""8aAwBbY""","",[],[],[],[],"{""Games Played"":5,""Wins"":3,""Losses"":2,""Score"":20,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1010,User10,Kadin.Barton49@gmail.com,"""NHy8KhR""","",[],[],[],[],"{""Games Played"":5,""Wins"":3,""Losses"":2,""Score"":20,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1011,User11,Maria.Maria@hotmail.com,"""ola1233""","",[],[],[],[],"{""Games Played "":10,""Wins"":6,""Losses"":4,""Score"":40,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]
+1012,User12,Pedro.Pedro@hotmail.com,"""adeus1235""","",[],[],[],[],"{""Games Played "":10,""Wins"":6,""Losses"":4,""Score"":40,""Rank"":"""",""Achievements"":""""}",[],"""online""","""ola123""",[]

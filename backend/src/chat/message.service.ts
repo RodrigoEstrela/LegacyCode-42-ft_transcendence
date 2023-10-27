@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { default as Message } from '../entities/message.entity';
-import { default as User } from '../entities/user.entity';
+import { Message, User, Groupchat } from '../entities';
 
 @Injectable()
 export class MessageService {
@@ -11,13 +10,17 @@ export class MessageService {
 		private readonly messageRepository: Repository<Message>,
 		@InjectRepository(User)
 		private readonly userService: Repository<User>,
+		@InjectRepository(Groupchat)
+		private readonly groupChatService: Repository<Groupchat>,
 	) {}
 
 	async findByPair(sender: string, receiver: string): Promise<Message[]> {
-		if (!await this.userService.findOne( {where: {username: sender}} ))
+		if (!await this.userService.findOne( {where: {username: sender}}) &&
+			!await this.groupChatService.findOne( {where: {name: sender}}))
 			return [];
 
-		if (!await this.userService.findOne( {where: {username: receiver}} ))
+		if (!await this.userService.findOne( {where: {username: receiver}}) &&
+			!await this.groupChatService.findOne( {where: {name: receiver}}))
 			return [];
 
 		return await this.messageRepository.find({

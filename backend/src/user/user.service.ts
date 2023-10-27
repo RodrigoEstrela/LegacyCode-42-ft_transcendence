@@ -242,6 +242,13 @@ export class UserService {
 	}
 	return null;
   }
+
+  async getGroupChats(username: string) {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (user)
+      return user.groupChats;
+    return null;
+  }
 }
 
 export default UserService;

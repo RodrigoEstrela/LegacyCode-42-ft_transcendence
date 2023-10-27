@@ -43,8 +43,12 @@ export class User {
   @Column('json', { nullable: true })
   status: string;
 
+// Chat info
   @Column('json', {nullable: true})
   socketID: string;
+
+  @Column('json', {nullable: true})
+  groupChats: string[];
 
 }
 

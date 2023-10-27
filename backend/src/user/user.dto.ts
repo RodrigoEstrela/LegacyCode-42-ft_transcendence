@@ -13,4 +13,5 @@ export default class UserDto {
     readonly history: string[];
     readonly status: string;
     readonly socketID: string;
+    readonly groupChats: string[];
 }

@@ -26,7 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
   async validate(accessToken: string, refreshToken: string, profile: Profile): Promise<any> {
     // const user = await this.authService.checkUserExists(profile.username);
-      const index = 1001 + Math.floor(Math.random() * 10);
+      const index = 1001 + Math.floor(Math.random() * 5);
       console.log("index: " + index);
       const user = await this.userService.findById(index);
 

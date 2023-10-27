@@ -1,18 +1,17 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { MessageService } from "./message.service";
-import { MessageController } from "./message.controller";
-import { default as Message } from "../entities/message.entity";
-import { User } from "../user";
-import { UserService } from "../user";
-
+import { MessageService, MessageController, Message } from ".";
+import { User, UserService } from "../user";
+import { GroupchatService } from "./groupchat/groupchat.service";
+import { Groupchat } from "../entities";
 
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([Message]),
 		TypeOrmModule.forFeature([User]),
+		TypeOrmModule.forFeature([Groupchat]),
 	],
-	providers: [MessageService, UserService],
+	providers: [MessageService, UserService, GroupchatService],
 	controllers: [MessageController],
 })
 

@@ -11,6 +11,7 @@ interface MessageData {
     cookieData: Record<string, string>;
     senderName: string;
     receiverName: string;
+    messageType: string,
 }
 
 const ChatRoom: React.FC = () => {
@@ -40,6 +41,10 @@ const ChatRoom: React.FC = () => {
                 const currentURL = window.location.href;
                 const urlParts = currentURL.split('/');
                 const receiverName = urlParts[urlParts.length - 1];
+                const messageType = urlParts[urlParts.length - 2];
+
+                console.log(senderName);
+                console.log(receiverName);
 
                 // Fetch messages for the user with otherUserId
                 fetch(`http://localhost:5000/message/${senderName}/${receiverName}`)
@@ -67,6 +72,7 @@ const ChatRoom: React.FC = () => {
                                 cookieData: {"ola": "ola"},
                                 senderName: item.sender,
                                 receiverName: item.receiver,
+                                messageType: messageType,
                             };
 
                             console.log("MessageData:" + messageData);
@@ -109,6 +115,8 @@ const ChatRoom: React.FC = () => {
 
             const currentURL = window.location.href;
             const urlParts = currentURL.split('/');
+            const receiverName = urlParts[urlParts.length - 1];
+            const messageType = urlParts[urlParts.length - 2];
 
             const cookieData = cookie.parse(document.cookie);
 
@@ -117,7 +125,8 @@ const ChatRoom: React.FC = () => {
                 senderId: socket.id,
                 cookieData,
                 senderName: cookieData['authCookie1'],
-                receiverName: urlParts[urlParts.length - 1],
+                receiverName: receiverName,
+                messageType: messageType,
             };
 
             socket.emit('chatMessage', messageData);
@@ -313,6 +322,7 @@ const App: React.FC = () => {
                     <Route path="/chat" element={<ChatRoom />} />
                     <Route path="/user" element={<UserProfile />} />
                     <Route path="/chat/dm/:id" element={<ChatRoom />} />
+                    <Route path="/chat/gc/:id" element={<ChatRoom />} />
                     <Route path="/auth/login" element={<Login />} />
                 </Routes>
             </div>
