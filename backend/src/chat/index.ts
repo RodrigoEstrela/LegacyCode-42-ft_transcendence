@@ -9,4 +9,4 @@ export { default as Groupchat } from "../entities/groupchat.entity";
 export { default as GroupchatService } from "./groupchat/groupchat.service";
 export { default as GroupchatController } from "./groupchat/groupchat.controller";
 export { default as GroupchatModule } from "./groupchat/groupchat.module";
-export { default as ChatGateway } from "./app.gateway";
+export { default as ChatGateway } from "./chat.gateway";

@@ -44,9 +44,11 @@ export class GroupchatController {
 		@Param('value') value: string,
 		@Headers() headers: Record<string, string>) {
 
+		console.log('Received manage groupchat request');
 		const sender = headers['sender'];
 		const groupchatExists = await this.groupchatService.checkGroupchatExists(name);
 		if (!groupchatExists) {
+			console.log('Groupchat not found');
 			throw new HttpException('Groupchat not found', HttpStatus.NOT_FOUND);
 		}
 

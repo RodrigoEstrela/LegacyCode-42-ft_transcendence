@@ -72,20 +72,25 @@ export class ChatGateway {
     {
       console.log(`Received message from client ${messageData.senderName}: ${messageData.message} to ${messageData.receiverName}`);
       const userlist = await this.groupchatService.getGroupchatMembers(messageData.receiverName);
-      console.log(userlist);
-      if (!(messageData.senderName in userlist))
+      if (!userlist.includes(messageData.senderName))
         throw new HttpException('You are not on this groupchat', 401);
+      await this.messageService.create(messageData.senderName, messageData.receiverName, messageData.message, new Date().toISOString())
+      client.emit('chatMessage', messageData as any);
+
+      messageData.message = messageData.senderName + ": " + messageData.message;
       for (const x in userlist)
       {
+        if (userlist[x] == messageData.senderName)
+          continue;
         const receiversocketid = await this.userService.getSocketId(userlist[x]);
         const receiver_socket = this.findWebSocketById(receiversocketid);
         if (receiver_socket)
+        {
+          messageData.senderName = messageData.receiverName;
           receiver_socket.emit('chatMessage', messageData as any);
-        const newmessage: string = messageData.senderName + ": " + messageData.message;
-        await this.messageService.create(messageData.receiverName, userlist[x], newmessage, new Date().toISOString());
+        }
+        await this.messageService.create(messageData.receiverName, userlist[x], messageData.message, new Date().toISOString());
       }
-      await this.messageService.create(messageData.senderName, messageData.receiverName, messageData.message, new Date().toISOString())
-      client.emit('chatMessage', messageData as any);
     }
   }
 }
