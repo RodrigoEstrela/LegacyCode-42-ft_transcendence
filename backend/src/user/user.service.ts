@@ -227,20 +227,29 @@ export class UserService {
     return !!user;
   }
 
-  async getSocketId(username: string) {
+  async getChatSocket(username: string) {
     const user = await this.userRepository.findOne({ where: { username } });
     if (user)
-      return user.socketID;
+      return user.chatSocket;
     return null;
   }
 
-  async setSocketId(username: string, socketID: string) {
+  async setChatSocket(username: string, socketID: string) {
 	  	const user = await this.userRepository.findOne({ where: { username } });
 	if (user) {
-	  user.socketID = socketID;
+	  user.chatSocket = socketID;
 	  return this.userRepository.save(user);
 	}
 	return null;
+  }
+
+  async setGameSocket(username: string, socketID: string) {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (user) {
+      user.gameSocket = socketID;
+      return this.userRepository.save(user);
+    }
+    return null;
   }
 
   async getGroupChats(username: string) {

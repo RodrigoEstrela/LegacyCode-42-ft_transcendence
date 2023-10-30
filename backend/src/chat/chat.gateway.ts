@@ -17,14 +17,23 @@ interface MessageData {
   messageType: string,
 }
 
-@WebSocketGateway({ cors: { origin: '*' } })
+interface GameData {
+  ballX: number;
+  ballY: number;
+  ballSpeedX: number;
+  ballSpeedY: number;
+  counter: number;
+}
+
+@WebSocketGateway({ cors: { origin: 'http://localhost:3000' } })
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
   constructor(private readonly userService: UserService,
               private messageService: MessageService,
               private groupchatService: GroupchatService) {}
-  private connectedClients = new Map<string, any>();
+  private connectedChatClients = new Map<string, any>();
+  private connectedGameClients = new Map<string, any>();
 
   handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
@@ -32,24 +41,37 @@ export class ChatGateway {
     const headers = client.handshake.headers;
     const cookieHeader = headers['cookieheader'];
     console.log('cookieHeader:', cookieHeader);
-    if (typeof cookieHeader === 'string') {
-      const cookieData = JSON.parse(cookieHeader);
-      const authCookie = cookieData.authCookie1;
-      console.log("set socket id for: " + authCookie);
-      this.userService.setSocketId(authCookie, client.id);
+    console.log('connectiontype: ', headers['connectiontype']);
+    if (headers['connectiontype'] == "1")
+    {
+      if (typeof cookieHeader === 'string') {
+        const cookieData = JSON.parse(cookieHeader);
+        const authCookie = cookieData.authCookie1;
+        console.log("set socket id for: " + authCookie);
+        this.userService.setChatSocket(authCookie, client.id);
+      }
+      this.connectedChatClients.set(client.id, client);
     }
-
-    this.connectedClients.set(client.id, client);
+    else
+    {
+      if (typeof cookieHeader === 'string') {
+        const cookieData = JSON.parse(cookieHeader);
+        const authCookie = cookieData.authCookie1;
+        console.log("set socket id for: " + authCookie);
+        this.userService.setGameSocket(authCookie, client.id);
+      }
+      this.connectedGameClients.set(client.id, client);
+    }
     client.emit('welcome', 'Welcome to the chat!');
   }
 
   handleDisconnect(client: Socket) {
-    this.connectedClients.delete(client.id);
+    this.connectedChatClients.delete(client.id);
     console.log(`Client disconnected: ${client.id}`);
   }
 
   findWebSocketById(id: string) {
-    return this.connectedClients.get(id);
+    return this.connectedChatClients.get(id);
   }
 
   @SubscribeMessage('chatMessage')
@@ -60,7 +82,7 @@ export class ChatGateway {
     if (messageData.messageType == "dm")
     {
       console.log(`Received message from client ${messageData.senderName}: ${messageData.message} to ${messageData.receiverName}`);
-      const receiversocketid = await this.userService.getSocketId(messageData.receiverName);
+      const receiversocketid = await this.userService.getChatSocket(messageData.receiverName);
       console.log("receiversocketid: " + receiversocketid);
       const receiver_socket = this.findWebSocketById(receiversocketid);
       if (receiver_socket)
@@ -82,7 +104,7 @@ export class ChatGateway {
       {
         if (userlist[x] == messageData.senderName)
           continue;
-        const receiversocketid = await this.userService.getSocketId(userlist[x]);
+        const receiversocketid = await this.userService.getChatSocket(userlist[x]);
         const receiver_socket = this.findWebSocketById(receiversocketid);
         if (receiver_socket)
         {
@@ -93,6 +115,89 @@ export class ChatGateway {
       }
     }
   }
+
+
+
+  private ballX: number = 50;
+  private ballY: number = 50;
+  private ballSpeedX: number = 5;
+  private ballSpeedY: number = 2;
+  private gameInterval: NodeJS.Timeout | null = null;
+  private canvasWidth = 800;
+  private canvasHeight = 400;
+  minSpeedX = -10; // Adjust as needed
+  maxSpeedX = 10;  // Adjust as needed
+  minSpeedY = -10; // Adjust as needed
+  maxSpeedY = 10;  // Adjust as needed
+  counter: number = 0;
+
+  @SubscribeMessage('startgame')
+  startGameLoop(client: Socket) {
+    console.log("GameStarted");
+    if (!this.gameInterval) {
+      this.gameInterval = setInterval(() => {
+        this.updateGame(client);
+      }, 1000 / 60); // 60 frames per second
+    }
+  }
+
+  stopGameLoop() {
+    if (this.gameInterval) {
+      clearInterval(this.gameInterval as unknown as number);
+      this.gameInterval = null;
+    }
+  }
+
+  updateGame(client) {
+    // Update the game state, including ball position, collision detection, scoring, etc.
+    this.updateBallPosition();
+
+    const gameData: GameData = {
+        ballX: this.ballX,
+        ballY: this.ballY,
+        ballSpeedX: this.ballSpeedX,
+        ballSpeedY: this.ballSpeedY,
+        counter: 0,
+    };
+
+    // console.log("ballX: " + this.ballX);
+    // console.log("ballY: " + this.ballY);
+    // console.log("ballSpeedX: " + this.ballSpeedX);
+    // console.log("ballSpeedY: " + this.ballSpeedY);
+    // Send the updated game state to all players
+    client.emit('gameupdate', gameData);
+  }
+
+  updateBallPosition() {
+    this.ballX += this.ballSpeedX;
+    this.ballY += this.ballSpeedY;
+
+    // console.log("ballX: " + this.ballX);
+    // console.log("ballY: " + this.ballY);
+    // console.log("canvasWidth: " + this.canvasWidth);
+    // console.log("canvasHeight: " + this.canvasHeight);
+
+    // Ensure the ball stays within the canvas boundaries
+    if (this.ballX < 0) {
+      this.ballX = 0;
+      this.ballSpeedX = Math.abs(this.ballSpeedX); // Reverse X speed
+    } else if (this.ballX > this.canvasWidth - 10) {
+      this.ballX = this.canvasWidth - 10;
+      this.ballSpeedX = -Math.abs(this.ballSpeedX); // Reverse X speed
+    }
+
+    if (this.ballY < 0) {
+      this.ballY = 0;
+      this.ballSpeedY = Math.abs(this.ballSpeedY); // Reverse Y speed
+    } else if (this.ballY > this.canvasHeight - 10) {
+      this.ballY = this.canvasHeight - 10;
+      this.ballSpeedY = -Math.abs(this.ballSpeedY); // Reverse Y speed
+    }
+  }
+
+
+
+
 }
 
 export default ChatGateway;

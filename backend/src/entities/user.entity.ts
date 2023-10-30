@@ -45,10 +45,14 @@ export class User {
 
 // Chat info
   @Column('json', {nullable: true})
-  socketID: string;
+  chatSocket: string;
 
   @Column('json', {nullable: true})
   groupChats: string[];
+
+// Game info
+  @Column('json', {nullable: true})
+  gameSocket: string;
 
 }
 

@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import io, { Socket } from 'socket.io-client';
 import './styles.css';
 import * as cookie from 'cookie';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
-import {stringify} from "querystring";
 
 interface MessageData {
     senderId: string;
@@ -12,6 +11,14 @@ interface MessageData {
     senderName: string;
     receiverName: string;
     messageType: string,
+}
+
+interface GameData {
+    ballX: number;
+    ballY: number;
+    ballSpeedX: number;
+    ballSpeedY: number;
+    counter: number;
 }
 
 const ChatRoom: React.FC = () => {
@@ -25,6 +32,7 @@ const ChatRoom: React.FC = () => {
 
         const headers = {
             'cookieheader': JSON.stringify(cookieData), // Use a custom header name
+            'connectiontype': "1",
         };
 
         console.log('Headers to send:', headers);
@@ -297,8 +305,144 @@ const Login = () => {
         </div>
     );
 };
+// const ChatRoom: React.FC = () => {
 
+const Game = () => {
+    const [socket, setSocket] = useState<Socket | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    let context: CanvasRenderingContext2D | null = null;
 
+    useEffect(() => {
+        const cookieData = cookie.parse(document.cookie);
+
+        const headers = {
+            'cookieheader': JSON.stringify(cookieData),
+            'connectiontype': '2',
+        };
+
+        const newSocket = io('http://localhost:5000', {extraHeaders: headers});
+        setSocket(newSocket);
+
+        const canvas = canvasRef.current;
+        if (canvas) {
+            context = canvas.getContext('2d');
+        }
+
+        newSocket.on('connect', () => {
+            console.log('Socket.IO connection established.');
+            newSocket.emit('startgame');
+        });
+
+        newSocket.on('gameupdate', (gameData: GameData) => {
+            renderGameFrame(gameData);
+        });
+
+        const renderGameFrame = (gameData: GameData) => {
+            if (context && canvas) {
+                clearCanvas();
+                drawBall(gameData.ballX, gameData.ballY);
+            }
+        };
+
+        const clearCanvas = () => {
+            if (context && canvas) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        };
+
+        const drawBall = (x: number, y: number) => {
+            if (context) {
+                context.fillStyle = 'white';
+                context.beginPath();
+                context.arc(x, y, 10, 0, Math.PI * 2);
+                context.fill();
+                context.closePath();
+            }
+        };
+
+    }, []);
+
+    return (
+        <div>
+            <canvas ref={canvasRef} width={800} height={400} style={{backgroundColor: 'black'}}/>
+        </div>
+    );
+};
+
+//     const canvasRef = useRef<HTMLCanvasElement | null>(null);
+//     let context: CanvasRenderingContext2D | null = null;
+//     let ballX = 300;
+//     let ballY = 300;
+//     let counter = 0;
+//     let ballSpeedX = 10;
+//     let ballSpeedY = 10;
+//     const minSpeedX = -10; // Adjust as needed
+//     const maxSpeedX = 10;  // Adjust as needed
+//     const minSpeedY = -10; // Adjust as needed
+//     const maxSpeedY = 10;  // Adjust as needed
+//
+//     useEffect(() => {
+//         const canvas = canvasRef.current;
+//         if (canvas) {
+//             context = canvas.getContext('2d');
+//             if (context) {
+//                 requestAnimationFrame(updateGameArea);
+//             }
+//         }
+//     }, []);
+//
+//     const updateGameArea = () => {
+//         if (context) {
+//             clearCanvas();
+//             moveBall();
+//             drawBall();
+//             requestAnimationFrame(updateGameArea);
+//         }
+//     };
+//
+//     const clearCanvas = () => {
+//         if (context) {
+//             context.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+//         }
+//     };
+//
+//     const moveBall = () => {
+//         if (context) {
+//             counter++;
+//
+//             if (counter % 30 == 0)
+//             {
+//                 ballSpeedX = Math.random() * (maxSpeedX - minSpeedX) + minSpeedX;
+//                 ballSpeedY = Math.random() * (maxSpeedY - minSpeedY) + minSpeedY;
+//             }
+//             ballX += ballSpeedX;
+//             ballY += ballSpeedY;
+//
+//             if (ballX > (canvasRef.current!.width - 10) || ballX < 0) {
+//                 ballSpeedX = -ballSpeedX;
+//             }
+//
+//             if (ballY > (canvasRef.current!.height - 10) || ballY < 0) {
+//                 ballSpeedY = -ballSpeedY;
+//             }
+//         }
+//     };
+//
+//     const drawBall = () => {
+//         if (context) {
+//             context.fillStyle = 'white';
+//             context.beginPath();
+//             context.arc(ballX, ballY, 10, 0, Math.PI * 2);
+//             context.fill();
+//             context.closePath();
+//         }
+//     };
+//
+//     return (
+//         <div>
+//             <canvas ref={canvasRef} width={800} height={400} style={{ backgroundColor: 'black' }} />
+//         </div>
+//     );
 
 const App: React.FC = () => {
     return (
@@ -324,6 +468,7 @@ const App: React.FC = () => {
                     <Route path="/chat/dm/:id" element={<ChatRoom />} />
                     <Route path="/chat/gc/:id" element={<ChatRoom />} />
                     <Route path="/auth/login" element={<Login />} />
+                    <Route path="/game" element={<Game />} />
                 </Routes>
             </div>
         </BrowserRouter>

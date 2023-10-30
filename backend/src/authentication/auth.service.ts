@@ -34,8 +34,9 @@ export class AuthService {
     user.stats = initialStats;
     user.history = [];
     user.status = "online";
-    user.socketID = "";
+    user.chatSocket = "";
     user.groupChats = [];
+    user.gameSocket = "";
     return await this.authRepository.save(user);
   }
 
