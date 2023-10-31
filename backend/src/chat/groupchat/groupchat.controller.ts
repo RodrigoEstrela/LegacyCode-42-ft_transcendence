@@ -21,7 +21,7 @@ export class GroupchatController {
 		}
 		// If no groupchat with the same name exists, create the groupchat
 		console.log('Received create groupchat request');
-		console.log(headers['sender'])
+		console.log(headers['sender']);
 		const groupchatCreated = await this.groupchatService.create(name, members, headers['sender'], admins, mode, password);
 		console.log(groupchatCreated);
 		return groupchatCreated;
@@ -54,9 +54,6 @@ export class GroupchatController {
 
 		return await this.groupchatService.manageGroupchat(name, command, value, sender);
 	}
-
-	// @Post()
-	// async sendMessageToUsers
 }
 
 export default GroupchatController;

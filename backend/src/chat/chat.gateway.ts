@@ -92,10 +92,18 @@ export class ChatGateway {
     }
     else if (messageData.messageType == "gc")
     {
+      let password : string = "";
+      const headers = client.handshake.headers;
+      const cookieHeader = headers['cookieheader'];
+      if (typeof cookieHeader === 'string')
+      {
+        const cookieData = JSON.parse(cookieHeader);
+        password = cookieData.password;
+      }
       console.log(`Received message from client ${messageData.senderName}: ${messageData.message} to ${messageData.receiverName}`);
       const userlist = await this.groupchatService.getGroupchatMembers(messageData.receiverName);
-      if (!userlist.includes(messageData.senderName))
-        throw new HttpException('You are not on this groupchat', 401);
+      if (!await this.groupchatService.authorizeMessage(messageData.receiverName, messageData.senderName, password))
+        throw new HttpException('Unauthorized groupchat access', 401);
       await this.messageService.create(messageData.senderName, messageData.receiverName, messageData.message, new Date().toISOString())
       client.emit('chatMessage', messageData as any);
 
@@ -153,11 +161,11 @@ export class ChatGateway {
     this.updateBallPosition();
 
     const gameData: GameData = {
-        ballX: this.ballX,
-        ballY: this.ballY,
-        ballSpeedX: this.ballSpeedX,
-        ballSpeedY: this.ballSpeedY,
-        counter: 0,
+      ballX: this.ballX,
+      ballY: this.ballY,
+      ballSpeedX: this.ballSpeedX,
+      ballSpeedY: this.ballSpeedY,
+      counter: 0,
     };
 
     // console.log("ballX: " + this.ballX);

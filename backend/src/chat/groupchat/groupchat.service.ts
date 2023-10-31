@@ -90,6 +90,14 @@ export class GroupchatService {
         return groupchat.members;
     }
 
+    async authorizeMessage(name: string, sender: string, password: string): Promise<boolean> {
+        const groupchat = await this.groupchatRepository.findOne({where: [{ name }]});
+        if (!groupchat.members.includes(sender))
+            return false;
+        else if (groupchat.mode == "public") {
+            return true;
+        } else return !(groupchat.mode == "private" && password !== groupchat.password);
+    }
 }
 
 export default GroupchatService;
