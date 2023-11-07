@@ -18,7 +18,9 @@ interface GameData {
     ballY: number;
     ballSpeedX: number;
     ballSpeedY: number;
-    counter: number;
+    score: string;
+    player0: number;
+    player1: number;
 }
 
 const ChatRoom: React.FC = () => {
@@ -308,16 +310,23 @@ const Login = () => {
 // const ChatRoom: React.FC = () => {
 
 const Game = () => {
-    const [socket, setSocket] = useState<Socket | null>(null);
+    const [newSocket, setSocket] = useState<Socket | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     let context: CanvasRenderingContext2D | null = null;
 
     useEffect(() => {
         const cookieData = cookie.parse(document.cookie);
 
+        const currentURL = window.location.href;
+        const urlParts = currentURL.split('/');
+        const gameId = urlParts[urlParts.length - 1];
+
+        console.log(gameId);
+
         const headers = {
             'cookieheader': JSON.stringify(cookieData),
             'connectiontype': '2',
+            'gameid': gameId,
         };
 
         const newSocket = io('http://localhost:5000', {extraHeaders: headers});
@@ -330,7 +339,7 @@ const Game = () => {
 
         newSocket.on('connect', () => {
             console.log('Socket.IO connection established.');
-            newSocket.emit('startgame');
+            // newSocket.emit('startgame');
         });
 
         newSocket.on('gameupdate', (gameData: GameData) => {
@@ -340,6 +349,10 @@ const Game = () => {
         const renderGameFrame = (gameData: GameData) => {
             if (context && canvas) {
                 clearCanvas();
+                drawField();
+                EstamosNaChampions(gameData.score);
+                drawPaddle(0, gameData.player0, 10, 150);
+                drawPaddle(1, gameData.player1, 10, 150);
                 drawBall(gameData.ballX, gameData.ballY);
             }
         };
@@ -352,7 +365,7 @@ const Game = () => {
 
         const drawBall = (x: number, y: number) => {
             if (context) {
-                context.fillStyle = 'white';
+                context.fillStyle = 'yellow';
                 context.beginPath();
                 context.arc(x, y, 10, 0, Math.PI * 2);
                 context.fill();
@@ -360,89 +373,159 @@ const Game = () => {
             }
         };
 
+        const drawPaddle = (player: number, y: number, width: number , height: number) => {
+            if (context)
+            {
+                if (player === 0)
+                {
+                    context.fillStyle = 'red'; // Player 0 Paddle color
+                    context.fillRect(0, y, width, height);
+                }
+                else
+                {
+                    context.fillStyle = 'blue'; // Player 1 Paddle color
+                    context.fillRect(790, y, width, height);
+                }
+            }
+        };
+
+        const drawField = () => {
+            if (context) {
+                context.fillStyle = 'white'
+                context.fillRect(395, 0, 5, 400);
+            }
+        };
+
+        const EstamosNaChampions = (score: string) => {
+            if (context) {
+                context.fillStyle = 'white'
+                context.fillRect(280, 5, 240, 50);
+                context.fillRect(360, 40, 60, 30);
+                context.fillStyle = 'black';
+                context.font = "20px 'Sports World', sans-serif";
+                context.fillText("FINAL DA CHAMPIONS", 290, 40);
+                context.font = "16px 'Sports World', sans-serif";
+                context.fillText(score, 370, 65);
+            }
+        };
+
+        const handleKeyPress = (event: KeyboardEvent) => {
+            const gameinfo = cookieData['authCookie1'] + '|' + gameId;
+            if (event.key === "w") {
+                // Handle Player 0 UP key press
+                newSocket.emit('player0Up', gameinfo);
+            } else if (event.key === "s") {
+                // Handle Player 0 DOWN key press
+                newSocket.emit('player0Down', gameinfo);
+            } else if (event.key === "i") {
+                // Handle Player 1 UP key press
+                newSocket.emit('player1Up', gameinfo);
+            } else if (event.key === "k") {
+                // Handle Player 1 DOWN key press
+                newSocket.emit('player1Down', gameinfo);
+            }
+        };
+
+        document.addEventListener("keypress", handleKeyPress)
+
+        return () => {
+            document.removeEventListener("keypress", handleKeyPress);
+        };
+
     }, []);
+
+    const startGame = () => {
+        // Emit 'startgame' event when the button is clicked
+        if (newSocket) {
+            newSocket.emit('stopgame');
+            const currentURL = window.location.href;
+            const urlParts = currentURL.split('/');
+            const gameId = urlParts[urlParts.length - 1];
+            newSocket.emit('startgame', gameId);
+        }
+    };
+
+    const stopGame = () => {
+        // Emit 'startgame' event when the button is clicked
+        if (newSocket) {
+            newSocket.emit('stopgame');
+        }
+    };
+
+    const player0Up = () => {
+        // Emit 'startgame' event when the button is clicked
+        if (newSocket) {
+            newSocket.emit('player0Up');
+        }
+    };
+
+    const player0Down = () => {
+        // Emit 'startgame' event when the button is clicked
+        if (newSocket) {
+            newSocket.emit('player0Down');
+        }
+    };
+
+    const player1Up = () => {
+        // Emit 'startgame' event when the button is clicked
+        if (newSocket) {
+            newSocket.emit('player1Up');
+        }
+    };
+
+    const player1Down = () => {
+        // Emit 'startgame' event when the button is clicked
+        if (newSocket) {
+            newSocket.emit('player1Down');
+        }
+    };
 
     return (
         <div>
             <canvas ref={canvasRef} width={800} height={400} style={{backgroundColor: 'black'}}/>
+            <button onClick={startGame}>Start Game</button>
+            <button onClick={stopGame}>Stop Game</button>
+            <button onClick={player0Up}>Player 0 UP</button>
+            <button onClick={player0Down}>Player 0 DOWN</button>
+            <button onClick={player1Up}>Player 1 UP</button>
+            <button onClick={player1Down}>Player 1 DOWN</button>
         </div>
     );
 };
 
-//     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-//     let context: CanvasRenderingContext2D | null = null;
-//     let ballX = 300;
-//     let ballY = 300;
-//     let counter = 0;
-//     let ballSpeedX = 10;
-//     let ballSpeedY = 10;
-//     const minSpeedX = -10; // Adjust as needed
-//     const maxSpeedX = 10;  // Adjust as needed
-//     const minSpeedY = -10; // Adjust as needed
-//     const maxSpeedY = 10;  // Adjust as needed
-//
-//     useEffect(() => {
-//         const canvas = canvasRef.current;
-//         if (canvas) {
-//             context = canvas.getContext('2d');
-//             if (context) {
-//                 requestAnimationFrame(updateGameArea);
-//             }
-//         }
-//     }, []);
-//
-//     const updateGameArea = () => {
-//         if (context) {
-//             clearCanvas();
-//             moveBall();
-//             drawBall();
-//             requestAnimationFrame(updateGameArea);
-//         }
-//     };
-//
-//     const clearCanvas = () => {
-//         if (context) {
-//             context.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
-//         }
-//     };
-//
-//     const moveBall = () => {
-//         if (context) {
-//             counter++;
-//
-//             if (counter % 30 == 0)
-//             {
-//                 ballSpeedX = Math.random() * (maxSpeedX - minSpeedX) + minSpeedX;
-//                 ballSpeedY = Math.random() * (maxSpeedY - minSpeedY) + minSpeedY;
-//             }
-//             ballX += ballSpeedX;
-//             ballY += ballSpeedY;
-//
-//             if (ballX > (canvasRef.current!.width - 10) || ballX < 0) {
-//                 ballSpeedX = -ballSpeedX;
-//             }
-//
-//             if (ballY > (canvasRef.current!.height - 10) || ballY < 0) {
-//                 ballSpeedY = -ballSpeedY;
-//             }
-//         }
-//     };
-//
-//     const drawBall = () => {
-//         if (context) {
-//             context.fillStyle = 'white';
-//             context.beginPath();
-//             context.arc(ballX, ballY, 10, 0, Math.PI * 2);
-//             context.fill();
-//             context.closePath();
-//         }
-//     };
-//
-//     return (
-//         <div>
-//             <canvas ref={canvasRef} width={800} height={400} style={{ backgroundColor: 'black' }} />
-//         </div>
-//     );
+function Matchmaking() {
+    const [isInQueue, setIsInQueue] = useState(false);
+
+    const joinQueue = () => {
+        // Send a request to your backend to add the user to the matchmaking queue.
+        // This could be done with a fetch or an Axios request.
+
+        const cookieData = cookie.parse(document.cookie);
+        console.log(JSON.stringify({ authCookie1: cookieData['authCookie1'] }));
+
+        // Assuming you have a backend route to handle this:
+        fetch('http://localhost:5000/game/queue', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ authCookie1: cookieData['authCookie1'] }),
+        })
+            .then((response) => {
+                    setIsInQueue(true);
+            })
+    };
+
+    return (
+        <div>
+            {isInQueue ? (
+                <p>Searching for a match...</p>
+            ) : (
+                <button onClick={() => joinQueue()}>Join Matchmaking Queue</button>
+            )}
+        </div>
+    );
+}
 
 const App: React.FC = () => {
     return (
@@ -459,6 +542,9 @@ const App: React.FC = () => {
                         <li>
                             <Link to="/user">User Profile</Link>
                         </li>
+                        <li>
+                            <Link to="/game">Game</Link>
+                        </li>
                     </ul>
                 </nav>
                 <Routes>
@@ -468,7 +554,7 @@ const App: React.FC = () => {
                     <Route path="/chat/dm/:id" element={<ChatRoom />} />
                     <Route path="/chat/gc/:id" element={<ChatRoom />} />
                     <Route path="/auth/login" element={<Login />} />
-                    <Route path="/game" element={<Game />} />
+                    <Route path="/matchmaking" element={<Matchmaking/>} />
                 </Routes>
             </div>
         </BrowserRouter>

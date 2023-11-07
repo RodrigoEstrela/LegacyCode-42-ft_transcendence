@@ -6,6 +6,7 @@ import { User, UserModule, UserController, UserService } from './user';
 import { config } from 'dotenv';
 import { ChatGateway, Groupchat, GroupchatModule, GroupchatController, GroupchatService,
 		Message, MessageModule, MessageController, MessageService}  from './chat';
+import { GameController } from "./game/game.controller";
 
 config();
 
@@ -30,7 +31,7 @@ config();
   	TypeOrmModule.forFeature([Message]),
 	MessageModule,
 ],
-  controllers: [AuthController, UserController, GroupchatController, MessageController],
+  controllers: [AuthController, UserController, GroupchatController, MessageController, GameController],
   providers: [AuthService, UserService, ChatGateway, GroupchatService, MessageService],
 })
 
