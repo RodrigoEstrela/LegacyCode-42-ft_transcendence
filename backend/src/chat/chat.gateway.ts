@@ -9,6 +9,8 @@ import messageEntity from "../entities/message.entity";
 import { GroupchatService } from './groupchat/groupchat.service';
 import {getAbsoluteMappingEntries} from "tsconfig-paths/lib/mapping-entry";
 import {Response} from "express";
+import GameDto from "../game/game.dto";
+import {combineLatestInit} from "rxjs/internal/observable/combineLatest";
 
 interface MessageData {
   senderId: string;
@@ -383,6 +385,31 @@ export class ChatGateway {
       this.ballSpeedX /= deviate;
     }
 
+  }
+
+  private gameQueue = new Map<string, any>;
+
+  @SubscribeMessage('queue')
+  async queue(client: Socket, user: string) {
+    console.log('Received queue request');
+    user = user.substring(16, user.indexOf('"', 16));
+    this.gameQueue.set(user, client);
+    if (Array.from(this.gameQueue.keys()).length >= 2) {
+      // print the list of keys on the gameQueue map
+      console.log(Array.from(this.gameQueue.keys())[0]);
+      console.log('Found 2 players');
+      const user = Array.from(this.gameQueue.keys())[0];
+      const user2 = Array.from(this.gameQueue.keys())[1];
+      console.log('user1: ' + user);
+      console.log('user2: ' + user2);
+      const gameId = user + ":" + user2;
+      const player1 = this.gameQueue.get(user);
+      this.gameQueue.delete(user);
+      const player2 = this.gameQueue.values().next().value;
+      this.gameQueue.delete(user2);
+      player1.emit('gameFound', gameId);
+      player2.emit('gameFound', gameId);
+    }
   }
 }
 

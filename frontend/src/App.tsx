@@ -493,27 +493,41 @@ const Game = () => {
     );
 };
 
-function Matchmaking() {
+const Matchmaking = () => {
     const [isInQueue, setIsInQueue] = useState(false);
+    const [newSocket, setSocket] = useState<Socket | null>(null);
 
-    const joinQueue = () => {
-        // Send a request to your backend to add the user to the matchmaking queue.
-        // This could be done with a fetch or an Axios request.
+    useEffect(() => {
 
         const cookieData = cookie.parse(document.cookie);
-        console.log(JSON.stringify({ authCookie1: cookieData['authCookie1'] }));
 
-        // Assuming you have a backend route to handle this:
-        fetch('http://localhost:5000/game/queue', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ authCookie1: cookieData['authCookie1'] }),
-        })
-            .then((response) => {
-                    setIsInQueue(true);
-            })
+        const headers = {
+            'cookieheader': JSON.stringify(cookieData),
+        };
+        const newSocket = io('http://localhost:5000', {extraHeaders: headers});
+        setSocket(newSocket);
+
+        newSocket.on('connect', () => {
+            console.log('Socket.IO Queue connection established.');
+            // newSocket.emit('startgame');
+        });
+
+        newSocket.on('gameFound', (gameId: string) => {
+            console.log('Game Found!!!!!!!');
+            console.log(gameId);
+            window.location.href = "http://localhost:3000/game/" + gameId;
+        });
+
+    }, []);
+
+    const joinQueue = () => {
+        // Emit 'startgame' event when the button is clicked
+        if (newSocket) {
+            const cookieData = cookie.parse(document.cookie);
+            const user = JSON.stringify(cookieData);
+            console.log("Ola Queue!!!!!!!!!!!!!");
+            newSocket.emit('queue', user);
+        }
     };
 
     return (
@@ -555,6 +569,7 @@ const App: React.FC = () => {
                     <Route path="/chat/gc/:id" element={<ChatRoom />} />
                     <Route path="/auth/login" element={<Login />} />
                     <Route path="/matchmaking" element={<Matchmaking/>} />
+                    <Route path="/game/:id" element={<Game/>} />
                 </Routes>
             </div>
         </BrowserRouter>
