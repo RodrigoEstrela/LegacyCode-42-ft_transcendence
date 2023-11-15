@@ -440,7 +440,7 @@ const Game = () => {
             newSocket.emit('stopgame');
             const currentURL = window.location.href;
             const urlParts = currentURL.split('/');
-            const gameId = urlParts[urlParts.length - 1];
+            const gameId = urlParts[urlParts.length - 2] + "/" + urlParts[urlParts.length - 1];
             newSocket.emit('startgame', gameId);
         }
     };
@@ -452,43 +452,11 @@ const Game = () => {
         }
     };
 
-    const player0Up = () => {
-        // Emit 'startgame' event when the button is clicked
-        if (newSocket) {
-            newSocket.emit('player0Up');
-        }
-    };
-
-    const player0Down = () => {
-        // Emit 'startgame' event when the button is clicked
-        if (newSocket) {
-            newSocket.emit('player0Down');
-        }
-    };
-
-    const player1Up = () => {
-        // Emit 'startgame' event when the button is clicked
-        if (newSocket) {
-            newSocket.emit('player1Up');
-        }
-    };
-
-    const player1Down = () => {
-        // Emit 'startgame' event when the button is clicked
-        if (newSocket) {
-            newSocket.emit('player1Down');
-        }
-    };
-
     return (
         <div>
             <canvas ref={canvasRef} width={800} height={400} style={{backgroundColor: 'black'}}/>
             <button onClick={startGame}>Start Game</button>
             <button onClick={stopGame}>Stop Game</button>
-            <button onClick={player0Up}>Player 0 UP</button>
-            <button onClick={player0Down}>Player 0 DOWN</button>
-            <button onClick={player1Up}>Player 1 UP</button>
-            <button onClick={player1Down}>Player 1 DOWN</button>
         </div>
     );
 };
@@ -520,23 +488,29 @@ const Matchmaking = () => {
 
     }, []);
 
-    const joinQueue = () => {
+    const joinLadderQueue = () => {
         // Emit 'startgame' event when the button is clicked
         if (newSocket) {
             const cookieData = cookie.parse(document.cookie);
-            const user = JSON.stringify(cookieData);
-            console.log("Ola Queue!!!!!!!!!!!!!");
-            newSocket.emit('queue', user);
+            const user = cookieData['authCookie1'];
+            newSocket.emit('ladderqueue', user);
+        }
+    };
+
+    const joinDesLadderQueue = () => {
+        // Emit 'startgame' event when the button is clicked
+        if (newSocket) {
+            const cookieData = cookie.parse(document.cookie);
+            const user = cookieData['authCookie1'];
+            newSocket.emit('friendlyqueue', user);
         }
     };
 
     return (
         <div>
-            {isInQueue ? (
-                <p>Searching for a match...</p>
-            ) : (
-                <button onClick={() => joinQueue()}>Join Matchmaking Queue</button>
-            )}
+            <p>Choose a Queue:</p>
+            <button onClick={() => joinLadderQueue()}>Join Ladder Queue</button>
+            <button onClick={() => joinDesLadderQueue()}>Join Friendly Queue</button>
         </div>
     );
 }
@@ -559,6 +533,9 @@ const App: React.FC = () => {
                         <li>
                             <Link to="/game">Game</Link>
                         </li>
+                        <li>
+                            <Link to="/matchmaking">Matchmaking</Link>
+                        </li>
                     </ul>
                 </nav>
                 <Routes>
@@ -569,7 +546,7 @@ const App: React.FC = () => {
                     <Route path="/chat/gc/:id" element={<ChatRoom />} />
                     <Route path="/auth/login" element={<Login />} />
                     <Route path="/matchmaking" element={<Matchmaking/>} />
-                    <Route path="/game/:id" element={<Game/>} />
+                    <Route path="/game/:type/:id" element={<Game/>} />
                 </Routes>
             </div>
         </BrowserRouter>

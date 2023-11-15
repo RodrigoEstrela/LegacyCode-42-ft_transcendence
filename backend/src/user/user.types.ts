@@ -7,3 +7,11 @@ export  type UserStats = {
   "Achievements": string;
 };
 
+type GameHistory = {
+  "Opponent": string;
+  "Score": string;
+  "Result": string;
+  "Type": string;
+}
+
+export type UserHistory = GameHistory[];

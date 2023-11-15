@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { UserStats } from '../user';
+import { UserStats, UserHistory } from '../user';
 
 @Entity('user')
 export class User {
@@ -38,7 +38,7 @@ export class User {
   stats: UserStats;
 
   @Column('json', { nullable: true })
-  history: string[];
+  history: UserHistory;
 
   @Column('json', { nullable: true })
   status: string;

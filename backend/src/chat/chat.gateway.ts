@@ -35,9 +35,12 @@ interface GameData {
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
+
   constructor(private readonly userService: UserService,
               private messageService: MessageService,
-              private groupchatService: GroupchatService) {}
+              private groupchatService: GroupchatService) {
+  }
+
   private connectedChatClients = new Map<string, any>();
   private connectedGameClients = new Map<string, any>();
   private currentGames = new Map<string, any>;
@@ -49,8 +52,7 @@ export class ChatGateway {
     const cookieHeader = headers['cookieheader'];
     console.log('cookieHeader:', cookieHeader);
     console.log('connectiontype: ', headers['connectiontype']);
-    if (headers['connectiontype'] == "1")
-    {
+    if (headers['connectiontype'] == "1") {
       if (typeof cookieHeader === 'string') {
         const cookieData = JSON.parse(cookieHeader);
         const authCookie = cookieData.authCookie1;
@@ -58,9 +60,7 @@ export class ChatGateway {
         this.userService.setChatSocket(authCookie, client.id);
       }
       this.connectedChatClients.set(client.id, client);
-    }
-    else
-    {
+    } else {
       let authCookie: string;
       if (typeof cookieHeader === 'string') {
         const cookieData = JSON.parse(cookieHeader);
@@ -70,8 +70,7 @@ export class ChatGateway {
       }
 
       const gameId = headers['gameid'];
-      if (typeof gameId === 'string')
-      {
+      if (typeof gameId === 'string') {
         console.log("GameId: " + gameId);
         const gamePlayers = gameId.split(':');
         const player0 = gamePlayers[0];
@@ -79,22 +78,17 @@ export class ChatGateway {
         this.connectedGameClients.set(authCookie, client);
         if (authCookie == player0) {
           const gameSockets = this.currentGames.get(gameId);
-          if (gameSockets)
-          {
+          if (gameSockets) {
             const otherValue = gameSockets.split(':');
             this.currentGames.set(gameId, client.id + ":" + otherValue[1]);
-          }
-          else
+          } else
             this.currentGames.set(gameId, client.id + ":" + "x");
-        }
-        else {
+        } else {
           const gameSockets = this.currentGames.get(gameId);
-          if (gameSockets)
-          {
+          if (gameSockets) {
             const otherValue = gameSockets.split(':');
             this.currentGames.set(gameId, otherValue[0] + ":" + client.id);
-          }
-          else
+          } else
             this.currentGames.set(gameId, "x" + ":" + client.id);
         }
       }
@@ -120,8 +114,7 @@ export class ChatGateway {
 
     console.log("messageType: " + messageData.messageType);
 
-    if (messageData.messageType == "dm")
-    {
+    if (messageData.messageType == "dm") {
       console.log(`Received message from client ${messageData.senderName}: ${messageData.message} to ${messageData.receiverName}`);
       const receiversocketid = await this.userService.getChatSocket(messageData.receiverName);
       console.log("receiversocketid: " + receiversocketid);
@@ -130,14 +123,11 @@ export class ChatGateway {
         receiver_socket.emit('chatMessage', messageData as any);
       client.emit('chatMessage', messageData as any);
       await this.messageService.create(messageData.senderName, messageData.receiverName, messageData.message, new Date().toISOString());
-    }
-    else if (messageData.messageType == "gc")
-    {
-      let password : string = "";
+    } else if (messageData.messageType == "gc") {
+      let password: string = "";
       const headers = client.handshake.headers;
       const cookieHeader = headers['cookieheader'];
-      if (typeof cookieHeader === 'string')
-      {
+      if (typeof cookieHeader === 'string') {
         const cookieData = JSON.parse(cookieHeader);
         password = cookieData.password;
       }
@@ -149,14 +139,12 @@ export class ChatGateway {
       client.emit('chatMessage', messageData as any);
 
       messageData.message = messageData.senderName + ": " + messageData.message;
-      for (const x in userlist)
-      {
+      for (const x in userlist) {
         if (userlist[x] == messageData.senderName)
           continue;
         const receiversocketid = await this.userService.getChatSocket(userlist[x]);
         const receiver_socket = this.findWebSocketById(receiversocketid);
-        if (receiver_socket)
-        {
+        if (receiver_socket) {
           messageData.senderName = messageData.receiverName;
           receiver_socket.emit('chatMessage', messageData as any);
         }
@@ -164,7 +152,6 @@ export class ChatGateway {
       }
     }
   }
-
 
 
   private ballX: number = 50;
@@ -216,13 +203,13 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player0 = gameplayers[0];
-    if (user == player0)
-    {
+    if (user == player0) {
       this.player0 += 10;
       if (this.player0 + this.paddleHeight > this.canvasHeight)
         this.player0 = this.canvasHeight - this.paddleHeight;
     }
   }
+
   @SubscribeMessage('player0Up')
   movePlayer0Up(client: Socket, gameinfo: string) {
     const gameinfoparts = gameinfo.split('|');
@@ -230,13 +217,13 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player0 = gameplayers[0];
-    if (user == player0)
-    {
+    if (user == player0) {
       this.player0 -= 10;
       if (this.player0 < 0)
         this.player0 = 0;
     }
   }
+
   @SubscribeMessage('player1Down')
   movePlayer1Down(client: Socket, gameinfo: string) {
     const gameinfoparts = gameinfo.split('|');
@@ -244,13 +231,13 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player1 = gameplayers[1];
-    if (user == player1)
-    {
+    if (user == player1) {
       this.player1 += 10;
       if (this.player1 + this.paddleHeight > this.canvasHeight)
         this.player1 = this.canvasHeight - this.paddleHeight;
     }
   }
+
   @SubscribeMessage('player1Up')
   movePlayer1Up(client: Socket, gameinfo: string) {
     const gameinfoparts = gameinfo.split('|');
@@ -258,8 +245,7 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player1 = gameplayers[1];
-    if (user == player1)
-    {
+    if (user == player1) {
       this.player1 -= 10;
       if (this.player1 < 0)
         this.player1 = 0;
@@ -268,8 +254,13 @@ export class ChatGateway {
 
 
   updateGame(client, gameId) {
+    const type = gameId.split('/')[0];
+    const playerstring: string = gameId.split('/')[1];
+    const players = playerstring.split(':');
+    const player0 = this.findWebSocketById2(players[0]);
+    const player1 = this.findWebSocketById2(players[1]);
     // Update the game state, including ball position, collision detection, scoring, etc.
-    this.updateBallPosition();
+    this.updateBallPosition(players[0], players[1], type);
 
     const score = this.player0Score + ":" + this.player1Score;
 
@@ -284,16 +275,13 @@ export class ChatGateway {
     };
 
     // Send the updated game state to all players
-    const players = gameId.split(':');
-    const player0 = this.findWebSocketById2(players[0]);
-    const player1 = this.findWebSocketById2(players[1]);
     if (player0)
       player0.emit('gameupdate', gameData);
     if (player1)
       player1.emit('gameupdate', gameData);
   }
 
-  updateBallPosition() {
+  async updateBallPosition(player0: string, player1: string, type: string) {
     const paddleHit = (this.ballY - this.player0) / this.paddleHeight;
     this.ballX += this.ballSpeedX;
     this.ballY += this.ballSpeedY;
@@ -311,6 +299,14 @@ export class ChatGateway {
       this.ballSpeedY = 2;
       this.ballX = 750;
       this.ballY = 50;
+      if (this.player1Score == 5) {
+        const score: string = this.player0Score + ":" + this.player1Score;
+        this.stopGameLoop();
+        await this.userService.manageStatsAndUsers(player1, "game", "win")
+        await this.userService.manageStatsAndUsers(player0, "game", "loss")
+        await this.userService.addGameHistory(player1, player0, score, "win", type)
+        await this.userService.addGameHistory(player0, player1, score, "loss", type)
+      }
     } else if (this.ballX > this.canvasWidth - 10) {
       // this.ballX = this.canvasWidth - 10;
       // this.ballSpeedX = -Math.abs(this.ballSpeedX); // Reverse X speed
@@ -321,6 +317,14 @@ export class ChatGateway {
       this.ballSpeedY = 2;
       this.ballX = 50;
       this.ballY = 50;
+      if (this.player0Score == 5) {
+        const score: string = this.player0Score + ":" + this.player1Score;
+        this.stopGameLoop();
+        await this.userService.manageStatsAndUsers(player0, "game", "win")
+        await this.userService.manageStatsAndUsers(player1, "game", "loss")
+        await this.userService.addGameHistory(player0, player1, score, "win", type)
+        await this.userService.addGameHistory(player1, player0, score, "loss", type)
+      }
     }
 
     if (this.ballY < 0) {
@@ -387,26 +391,51 @@ export class ChatGateway {
 
   }
 
-  private gameQueue = new Map<string, any>;
+  private ladderQueue = new Map<string, any>;
+  private friendlyQueue = new Map<string, any>;
+  @SubscribeMessage('ladderqueue')
+  async queueCompetetive(client: Socket, user: string) {
+    console.log('Received queue request');
+    console.log(user);
+    user = user.substring(16, user.indexOf('"', 16));
+    this.ladderQueue.set(user, client);
+    if (Array.from(this.ladderQueue.keys()).length >= 2) {
+      // print the list of keys on the gameQueue map
+      const user = Array.from(this.ladderQueue.keys())[0];
+      const user2 = Array.from(this.ladderQueue.keys())[1];
+      const gameId =  "ladder/" + user + ":" + user2;
+      const player1 = this.ladderQueue.get(user);
+      this.ladderQueue.delete(user);
+      const player2 = this.ladderQueue.values().next().value;
+      this.ladderQueue.delete(user2);
+      this.friendlyQueue.delete(user);
+      this.friendlyQueue.delete(user2);
+      player1.emit('gameFound', gameId);
+      player2.emit('gameFound', gameId);
+    }
+  }
 
-  @SubscribeMessage('queue')
-  async queue(client: Socket, user: string) {
+  @SubscribeMessage('friendlyqueue')
+  async queueFriendly(client: Socket, user: string) {
     console.log('Received queue request');
     user = user.substring(16, user.indexOf('"', 16));
-    this.gameQueue.set(user, client);
-    if (Array.from(this.gameQueue.keys()).length >= 2) {
+    console.log(user);
+    this.friendlyQueue.set(user, client);
+    if (Array.from(this.friendlyQueue.keys()).length >= 2) {
       // print the list of keys on the gameQueue map
-      console.log(Array.from(this.gameQueue.keys())[0]);
+      console.log(Array.from(this.friendlyQueue.keys())[0]);
       console.log('Found 2 players');
-      const user = Array.from(this.gameQueue.keys())[0];
-      const user2 = Array.from(this.gameQueue.keys())[1];
+      const user = Array.from(this.friendlyQueue.keys())[0];
+      const user2 = Array.from(this.friendlyQueue.keys())[1];
       console.log('user1: ' + user);
       console.log('user2: ' + user2);
-      const gameId = user + ":" + user2;
-      const player1 = this.gameQueue.get(user);
-      this.gameQueue.delete(user);
-      const player2 = this.gameQueue.values().next().value;
-      this.gameQueue.delete(user2);
+      const gameId = "friendly/" + user + ":" + user2;
+      const player1 = this.friendlyQueue.get(user);
+      this.friendlyQueue.delete(user);
+      const player2 = this.friendlyQueue.values().next().value;
+      this.friendlyQueue.delete(user2);
+      this.ladderQueue.delete(user);
+      this.ladderQueue.delete(user2);
       player1.emit('gameFound', gameId);
       player2.emit('gameFound', gameId);
     }

@@ -49,7 +49,6 @@ export class UserService {
     if (!existingUser) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    // TODO: ACEITAR JSON COM A INFO DO JOGO PARA ADICIONAR A GAME HISTORY
     // Update the user with the provided data
     switch (command) {
       case 'game':
@@ -194,6 +193,15 @@ export class UserService {
         existingUser.blockedUsers = existingUser.blockedUsers.filter((user: string) => user !== value);
         break;
     }
+    return this.userRepository.save(existingUser);
+  }
+
+  async addGameHistory(username: string, opponent: string, score: string, result: string, type: string): Promise<User> {
+    const existingUser = await this.userRepository.findOne({ where: { username } });
+    if (!existingUser) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    existingUser.history.push({Opponent: opponent, Score: score, Result: result, Type: type});
     return this.userRepository.save(existingUser);
   }
   // DELETE USER --------------------------------------------------------------------------------------------

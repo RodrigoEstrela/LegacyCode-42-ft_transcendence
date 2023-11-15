@@ -1,4 +1,4 @@
-import { UserStats } from "./user.types";
+import {UserHistory, UserStats} from "./user.types";
 
 export default class UserDto {
     readonly id: number;
@@ -10,7 +10,7 @@ export default class UserDto {
     readonly friendRequestsSent: string[];
     readonly blockedUsers: string[];
     readonly stats: UserStats;
-    readonly history: string[];
+    readonly history: UserHistory;
     readonly status: string;
     readonly chatSocket: string;
     readonly groupChats: string[];
