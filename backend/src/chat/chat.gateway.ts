@@ -29,6 +29,7 @@ interface GameData {
   score: string;
   player0: number;
   player1: number;
+  hit: number;
 }
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:3000' } })
@@ -169,6 +170,7 @@ export class ChatGateway {
   private player0Score: number = 0;
   private player1Score: number = 0;
   private ballHitCounter: number = 1;
+  private hit = 0;
 
   @SubscribeMessage('startgame')
   startGameLoop(client: Socket, gameId: string) {
@@ -203,11 +205,11 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player0 = gameplayers[0];
-    if (user == player0) {
+    // if (user == player0) {
       this.player0 += 10;
       if (this.player0 + this.paddleHeight > this.canvasHeight)
         this.player0 = this.canvasHeight - this.paddleHeight;
-    }
+    // }
   }
 
   @SubscribeMessage('player0Up')
@@ -217,11 +219,11 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player0 = gameplayers[0];
-    if (user == player0) {
+    // if (user == player0) {
       this.player0 -= 10;
       if (this.player0 < 0)
         this.player0 = 0;
-    }
+    // }
   }
 
   @SubscribeMessage('player1Down')
@@ -231,11 +233,11 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player1 = gameplayers[1];
-    if (user == player1) {
+    // if (user == player1) {
       this.player1 += 10;
       if (this.player1 + this.paddleHeight > this.canvasHeight)
         this.player1 = this.canvasHeight - this.paddleHeight;
-    }
+    // }
   }
 
   @SubscribeMessage('player1Up')
@@ -245,15 +247,16 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player1 = gameplayers[1];
-    if (user == player1) {
+    // if (user == player1) {
       this.player1 -= 10;
       if (this.player1 < 0)
         this.player1 = 0;
-    }
+    // }
   }
 
 
   updateGame(client, gameId) {
+    this.hit = 0;
     const type = gameId.split('/')[0];
     const playerstring: string = gameId.split('/')[1];
     const players = playerstring.split(':');
@@ -272,6 +275,7 @@ export class ChatGateway {
       score: score,
       player0: this.player0,
       player1: this.player1,
+      hit: this.hit,
     };
 
     // Send the updated game state to all players
@@ -282,9 +286,10 @@ export class ChatGateway {
   }
 
   async updateBallPosition(player0: string, player1: string, type: string) {
-    const paddleHit = (this.ballY - this.player0) / this.paddleHeight;
+    // const paddleHit = (this.ballY - this.player0) / this.paddleHeight;
     this.ballX += this.ballSpeedX;
     this.ballY += this.ballSpeedY;
+    const paddleHit = (this.ballY - this.player0) / this.paddleHeight;
     // console.log("Ball Hit Counter" + this.ballHitCounter);
     // console.log("Ball Speed X" + this.ballSpeedX);
 
@@ -296,9 +301,9 @@ export class ChatGateway {
       console.log("Player1 Scoooored!!!!!!");
       this.ballHitCounter = 1;
       this.ballSpeedX = -5;
-      this.ballSpeedY = 2;
+      this.ballSpeedY = Math.random() * 4 - 2;
       this.ballX = 750;
-      this.ballY = 50;
+      this.ballY = Math.random() * 350 + 20;
       if (this.player1Score == 5) {
         const score: string = this.player0Score + ":" + this.player1Score;
         this.stopGameLoop();
@@ -314,9 +319,9 @@ export class ChatGateway {
       console.log("Player0 Scoooored!!!!!!");
       this.ballHitCounter = 1;
       this.ballSpeedX = 5;
-      this.ballSpeedY = 2;
+      this.ballSpeedY = Math.random() * 4 - 2;
       this.ballX = 50;
-      this.ballY = 50;
+      this.ballY = Math.random() * 350 + 20;
       if (this.player0Score == 5) {
         const score: string = this.player0Score + ":" + this.player1Score;
         this.stopGameLoop();
@@ -364,6 +369,7 @@ export class ChatGateway {
       this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 2.5;
       this.ballSpeedY *= deviate;
       this.ballSpeedX /= deviate;
+      this.hit = 1;
     }
 
     // Check for collision with Player 1 paddle
@@ -388,6 +394,7 @@ export class ChatGateway {
       this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 2.5;
       this.ballSpeedY *= deviate;
       this.ballSpeedX /= deviate;
+      this.hit = 1;
     }
   }
 

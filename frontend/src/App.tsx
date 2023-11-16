@@ -3,6 +3,7 @@ import io, { Socket } from 'socket.io-client';
 import './styles.css';
 import * as cookie from 'cookie';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
+import SoundPlayer from "./sounds";
 
 const ChatRoom: React.FC = () => {
     const [messages, setMessages] = useState<MessageData[]>([]);
@@ -210,6 +211,7 @@ interface GameData {
     score: string;
     player0: number;
     player1: number;
+    hit: number;
 }
 
 const Home: React.FC = () => {
@@ -378,6 +380,14 @@ const Game = () => {
             renderGameFrame(gameData);
         });
 
+        const playSound = () => {
+            // Access the SoundPlayer component and call the playSound method
+            const soundPlayer = document.getElementById('soundPlayer') as any;
+            if (soundPlayer) {
+                soundPlayer.playSound();
+            }
+        };
+
         const renderGameFrame = (gameData: GameData) => {
             if (context && canvas) {
                 clearCanvas();
@@ -386,6 +396,9 @@ const Game = () => {
                 drawPaddle(0, gameData.player0, 10, 150);
                 drawPaddle(1, gameData.player1, 10, 150);
                 drawBall(gameData.ballX, gameData.ballY);
+                console.log(gameData.hit);
+                if (gameData.hit == 1)
+                    playSound();
             }
         };
 
@@ -489,6 +502,7 @@ const Game = () => {
             <canvas ref={canvasRef} width={800} height={400} style={{backgroundColor: 'black'}}/>
             <button onClick={startGame}>Start Game</button>
             <button onClick={stopGame}>Stop Game</button>
+            <SoundPlayer src="./tennis-ball-hit-151257.mp3" volume={1}/>
         </div>
     );
 };
