@@ -302,8 +302,8 @@ export class ChatGateway {
       if (this.player1Score == 5) {
         const score: string = this.player0Score + ":" + this.player1Score;
         this.stopGameLoop();
-        await this.userService.manageStatsAndUsers(player1, "game", "win")
-        await this.userService.manageStatsAndUsers(player0, "game", "loss")
+        await this.userService.manageStatsAndUsers(player1, "game", "win-" + type)
+        await this.userService.manageStatsAndUsers(player0, "game", "loss-" + type)
         await this.userService.addGameHistory(player1, player0, score, "win", type)
         await this.userService.addGameHistory(player0, player1, score, "loss", type)
       }
@@ -320,8 +320,8 @@ export class ChatGateway {
       if (this.player0Score == 5) {
         const score: string = this.player0Score + ":" + this.player1Score;
         this.stopGameLoop();
-        await this.userService.manageStatsAndUsers(player0, "game", "win")
-        await this.userService.manageStatsAndUsers(player1, "game", "loss")
+        await this.userService.manageStatsAndUsers(player0, "game", "win-" + type)
+        await this.userService.manageStatsAndUsers(player1, "game", "loss-" + type)
         await this.userService.addGameHistory(player0, player1, score, "win", type)
         await this.userService.addGameHistory(player1, player0, score, "loss", type)
       }
@@ -333,7 +333,8 @@ export class ChatGateway {
       this.ballHitCounter++;
       this.ballSpeedX *= 1 + (1 / this.ballHitCounter) / 2.5;
       this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 2.5;
-    } else if (this.ballY > this.canvasHeight - 10) {
+    }
+    else if (this.ballY > this.canvasHeight - 10) {
       this.ballY = this.canvasHeight - 10;
       this.ballSpeedY = -Math.abs(this.ballSpeedY); // Reverse Y speed
       this.ballHitCounter++;
@@ -388,7 +389,6 @@ export class ChatGateway {
       this.ballSpeedY *= deviate;
       this.ballSpeedX /= deviate;
     }
-
   }
 
   private ladderQueue = new Map<string, any>;
@@ -436,6 +436,33 @@ export class ChatGateway {
       this.friendlyQueue.delete(user2);
       this.ladderQueue.delete(user);
       this.ladderQueue.delete(user2);
+      player1.emit('gameFound', gameId);
+      player2.emit('gameFound', gameId);
+    }
+  }
+
+  private gameInvites : string[] = [];
+
+  @SubscribeMessage('challenge')
+  async challenge(client: Socket, challengeInfo: string)
+  {
+    console.log(client.id + "sent a challenge");
+    this.gameInvites.push(challengeInfo);
+  }
+
+  @SubscribeMessage('acceptchallenge')
+  async acceptchallenge(client: Socket, challengeInfo: string)
+  {
+    console.log(client.id + "accepted a challenge");
+    // check if a string is a string array
+    console.log(this.gameInvites);
+    console.log("\n\nchallengeInfo: " + challengeInfo);
+    if (this.gameInvites.includes(challengeInfo))
+    {
+      this.gameInvites.splice(this.gameInvites.indexOf(challengeInfo), 1);
+      const player1 = this.findWebSocketById(await this.userService.getChatSocket(challengeInfo.split(':')[0]));
+      const player2 = this.findWebSocketById(await this.userService.getChatSocket(challengeInfo.split(':')[1]));
+      const gameId = "friendly/" + challengeInfo.split(':')[0] + ":" + challengeInfo.split(':')[1];
       player1.emit('gameFound', gameId);
       player2.emit('gameFound', gameId);
     }

@@ -53,17 +53,21 @@ export class UserService {
     switch (command) {
       case 'game':
         existingUser.stats["Games Played"] += 1;
-        if (value === 'win') {
+        if (value === 'win-ladder') {
           existingUser.stats["Wins"] += 1;
           existingUser.stats["Score"] += 10;
-          // TODO: ADICIONAR SISTEMA DE RANKING
         }
-        else if (value === 'loss') {
+        else if (value === 'loss-ladder') {
           existingUser.stats["Losses"] += 1;
           if (existingUser.stats["Score"] > 0) {
             existingUser.stats["Score"] -= 5;
           }
-          // TODO: ADICIONAR SISTEMA DE RANKING
+        }
+        else if (value == 'win-friendly') {
+          existingUser.stats["Wins"] += 1;
+        }
+        else if (value == 'loss-friendly') {
+          existingUser.stats["Losses"] += 1;
         }
         break;
       case 'blockuser':

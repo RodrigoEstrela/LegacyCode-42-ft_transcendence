@@ -4,29 +4,10 @@ import './styles.css';
 import * as cookie from 'cookie';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 
-interface MessageData {
-    senderId: string;
-    message: string;
-    cookieData: Record<string, string>;
-    senderName: string;
-    receiverName: string;
-    messageType: string,
-}
-
-interface GameData {
-    ballX: number;
-    ballY: number;
-    ballSpeedX: number;
-    ballSpeedY: number;
-    score: string;
-    player0: number;
-    player1: number;
-}
-
 const ChatRoom: React.FC = () => {
     const [messages, setMessages] = useState<MessageData[]>([]);
     const [inputValue, setInputValue] = useState('');
-    const [socket, setSocket] = useState<Socket | null>(null);
+    const [newSocket, setSocket] = useState<Socket | null>(null);
 
     useEffect(() => {
 
@@ -45,62 +26,62 @@ const ChatRoom: React.FC = () => {
         newSocket.on('connect', () => {
             console.log('Socket.IO connection established.');
 
-                const cookieData = cookie.parse(document.cookie);
-                const senderName = cookieData['authCookie1'];
+            const cookieData = cookie.parse(document.cookie);
+            const senderName = cookieData['authCookie1'];
 
-                const currentURL = window.location.href;
-                const urlParts = currentURL.split('/');
-                const receiverName = urlParts[urlParts.length - 1];
-                const messageType = urlParts[urlParts.length - 2];
+            const currentURL = window.location.href;
+            const urlParts = currentURL.split('/');
+            const receiverName = urlParts[urlParts.length - 1];
+            const messageType = urlParts[urlParts.length - 2];
 
-                console.log(senderName);
-                console.log(receiverName);
+            console.log(senderName);
+            console.log(receiverName);
 
-                // Fetch messages for the user with otherUserId
-                fetch(`http://localhost:5000/message/${senderName}/${receiverName}`)
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        const messageDataArray: MessageData[] = new Array(data.length);
+            // Fetch messages for the user with otherUserId
+            fetch(`http://localhost:5000/message/${senderName}/${receiverName}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    const messageDataArray: MessageData[] = new Array(data.length);
 
-                        // Use a for loop to iterate through the JSON array
-                        for (let i = 0; i < data.length; i++) {
-                            const item: {id: string, sender: string, receiver: string,
+                    // Use a for loop to iterate through the JSON array
+                    for (let i = 0; i < data.length; i++) {
+                        const item: {id: string, sender: string, receiver: string,
                             content: string, timestamp: string} = data[i];
 
-                            // Log the item
-                            console.log('Item:', item);
+                        // Log the item
+                        console.log('Item:', item);
 
-                            console.log('ìtem.senderId: ', item.id);
-                            const messageData: MessageData = {
-                                senderId: item.id,
-                                message: item.content,
-                                cookieData: {"ola": "ola"},
-                                senderName: item.sender,
-                                receiverName: item.receiver,
-                                messageType: messageType,
-                            };
+                        console.log('ìtem.senderId: ', item.id);
+                        const messageData: MessageData = {
+                            senderId: item.id,
+                            message: item.content,
+                            cookieData: {"ola": "ola"},
+                            senderName: item.sender,
+                            receiverName: item.receiver,
+                            messageType: messageType,
+                        };
 
-                            console.log("MessageData:" + messageData);
+                        console.log("MessageData:" + messageData);
 
 
-                            // Set the MessageData object at the corresponding index in the array
-                            messageDataArray[i] = messageData;
-                            console.log(messageDataArray[i]);
-                        }
+                        // Set the MessageData object at the corresponding index in the array
+                        messageDataArray[i] = messageData;
+                        console.log(messageDataArray[i]);
+                    }
 
-                        setMessages(messageDataArray);
-                        // const messageData: MessageData = data as MessageData;
-                        // console.log(messageData);
-                        // setMessages(data);
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching messages:', error);
-                    });
+                    setMessages(messageDataArray);
+                    // const messageData: MessageData = data as MessageData;
+                    // console.log(messageData);
+                    // setMessages(data);
+                })
+                .catch((error) => {
+                    console.error('Error fetching messages:', error);
+                });
 
         });
 
@@ -112,6 +93,12 @@ const ChatRoom: React.FC = () => {
             setMessages((prevMessages) => [...prevMessages, messageData]);
         });
 
+        newSocket.on('gameFound', (gameId: string) => {
+            console.log("CHALLENGE STARTED!!!!!!!!!!!!");
+            console.log(gameId);
+            window.location.href = "http://localhost:3000/game/" + gameId;
+        });
+
         return () => {
             if (newSocket) {
                 newSocket.disconnect();
@@ -121,7 +108,7 @@ const ChatRoom: React.FC = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        if (socket) {
+        if (newSocket) {
 
             const currentURL = window.location.href;
             const urlParts = currentURL.split('/');
@@ -132,20 +119,40 @@ const ChatRoom: React.FC = () => {
 
             const messageData: MessageData = {
                 message: inputValue,
-                senderId: socket.id,
+                senderId: newSocket.id,
                 cookieData,
                 senderName: cookieData['authCookie1'],
                 receiverName: receiverName,
                 messageType: messageType,
             };
 
-            socket.emit('chatMessage', messageData);
+            newSocket.emit('chatMessage', messageData);
         }
         setInputValue('');
     };
 
     const cookieData = cookie.parse(document.cookie);
     const currentUser = cookieData['authCookie1'];
+
+    const Challenge = () => {
+        const user = cookie.parse(document.cookie)['authCookie1'];
+        const url = window.location.href;
+        const user2 = url.split('/')[5];
+        const challengeInfo = user + ":" + user2;
+        if (newSocket) {
+            newSocket.emit('challenge', challengeInfo);
+        }
+    };
+
+    const AcceptChallenge = () => {
+        const user = cookie.parse(document.cookie)['authCookie1'];
+        const url = window.location.href;
+        const user2 = url.split('/')[5];
+        const challengeInfo = user2 + ":" + user;
+        if (newSocket) {
+            newSocket.emit('acceptchallenge', challengeInfo);
+        }
+    }
 
     return (
         <div>
@@ -155,13 +162,13 @@ const ChatRoom: React.FC = () => {
                     <div
                         key={index}
                         className={
-                            socket && messageData.senderName === currentUser
+                            newSocket && messageData.senderName === currentUser
                                 ? 'message-wrapper self'
                                 : 'message-wrapper others'
                         }
                     >
                         <div className="message-label">
-                            {socket && messageData.senderName === currentUser ? 'You' : messageData.senderName}
+                            {newSocket && messageData.senderName === currentUser ? 'You' : messageData.senderName}
                         </div>
                         <div className="message">{messageData.message}</div>
                     </div>
@@ -176,9 +183,34 @@ const ChatRoom: React.FC = () => {
                 />
                 <button type="submit">Send</button>
             </form>
+            <button type="button" onClick={Challenge}>
+                Challenge
+            </button>
+            <button type="button" onClick={AcceptChallenge}>
+                Accept Challenge
+            </button>
         </div>
     );
 };
+
+interface MessageData {
+    senderId: string;
+    message: string;
+    cookieData: Record<string, string>;
+    senderName: string;
+    receiverName: string;
+    messageType: string,
+}
+
+interface GameData {
+    ballX: number;
+    ballY: number;
+    ballSpeedX: number;
+    ballSpeedY: number;
+    score: string;
+    player0: number;
+    player1: number;
+}
 
 const Home: React.FC = () => {
     return (
