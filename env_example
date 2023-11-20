@@ -28,3 +28,11 @@ NETWORK=ft_transcendence
 # Seeding
 TYPEORM_SEEDING_FACTORIES=backend/src/seeding/factories/user.factory.ts
 TYPEORM_SEEDING_SEEDS=backend/src/seeding/seeds/initalSeed.ts
+
+# Secrets
+CLIENT_ID=
+CLIENT_SECRET=
+
+# Redirections
+CALLBACK_URL=http://localhost:5000/auth/42/callback
+FRONTEND_URL=http://localhost:3000
