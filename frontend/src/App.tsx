@@ -516,11 +516,23 @@ const Game = () => {
         }
     };
 
+    const Ready = () => {
+        if (newSocket)
+        {
+            const currentURL = window.location.href;
+            const urlParts = currentURL.split('/');
+            const gameId = urlParts[urlParts.length - 1];
+            const player = cookie.parse(document.cookie)['authCookie1'];
+            newSocket.emit('ready', gameId + ":" + player);
+        }
+    }
+
     return (
         <div>
             <canvas ref={canvasRef} width={800} height={400} style={{backgroundColor: 'black'}}/>
             <button onClick={startGame}>Start Game</button>
             <button onClick={stopGame}>Stop Game</button>
+            <button onClick={Ready}>Ready Up</button>
             <SoundPlayer src="./tennis-ball-hit-151257.mp3" volume={1}/>
         </div>
     );

@@ -81,14 +81,14 @@ export class ChatGateway {
           const gameSockets = this.currentGames.get(gameId);
           if (gameSockets) {
             const otherValue = gameSockets.split(':');
-            this.currentGames.set(gameId, client.id + ":" + otherValue[1]);
+            this.currentGames.set(gameId, client.id + ":" + otherValue[1] + ":" + "00");
           } else
             this.currentGames.set(gameId, client.id + ":" + "x");
         } else {
           const gameSockets = this.currentGames.get(gameId);
           if (gameSockets) {
             const otherValue = gameSockets.split(':');
-            this.currentGames.set(gameId, otherValue[0] + ":" + client.id);
+            this.currentGames.set(gameId, otherValue[0] + ":" + client.id + ":" + "00");
           } else
             this.currentGames.set(gameId, "x" + ":" + client.id);
         }
@@ -155,6 +155,7 @@ export class ChatGateway {
   }
 
 
+  private playersReady = 0;
   private ballSize = 5;
   private ballX: number = 50;
   private ballY: number = 50;
@@ -179,11 +180,22 @@ export class ChatGateway {
   startGameLoop(client: Socket, gameId: string) {
     console.log("GameStarted");
     console.log("Game Id: " + gameId);
-    if (!this.gameInterval) {
-      this.gameInterval = setInterval(() => {
-        this.updateGame(client, gameId);
-      }, 1000 / 60); // 60 frames per second
-    }
+
+    // Assuming you want to start the game after 5 seconds, adjust the duration as needed
+    const delayInSeconds = 0;
+
+    setTimeout(() => {
+      const game = this.currentGames.get(gameId.split('/')[1]);
+      console.log(game);
+
+      if (game.split(':')[2] == "11") {
+        if (!this.gameInterval) {
+          this.gameInterval = setInterval(() => {
+            this.updateGame(client, gameId);
+          }, 1000 / 60); // 60 frames per second
+        }
+      }
+    }, delayInSeconds * 1000); // Convert seconds to milliseconds
   }
 
   @SubscribeMessage('stopgame')
@@ -198,6 +210,44 @@ export class ChatGateway {
       this.player0Score = 0;
       this.player1Score = 0;
       this.ballHitCounter = 1;
+      this.playersReady = 0;
+    }
+  }
+
+  @SubscribeMessage('ready')
+  readyUp(client: Socket, gameInfo: string) {
+    const gameId = gameInfo.split(':')[0] + ':' + gameInfo.split(':')[1];
+    const playerReady = gameInfo.split(':')[2];
+    const sockets = this.currentGames.get(gameId);
+    if (sockets.split(":")[2] == "00"){
+      const array = sockets.split('');
+      if (playerReady == gameId.split(':')[0])
+      {
+        array[array.length - 2] = '1';
+        this.currentGames.set(gameId, array.join(''));
+        console.log(this.currentGames.get(gameId));
+      }
+      else if (playerReady == gameId.split(':')[1])
+      {
+        array[array.length - 1] = '1';
+        this.currentGames.set(gameId, array.join(''));
+        console.log(this.currentGames.get(gameId));
+      }
+    }
+    else if (sockets.split(":")[2] == "01" || sockets.split(":")[2] == "10"){
+      const array = sockets.split('');
+      if (playerReady == gameId.split(':')[0])
+      {
+        array[array.length - 2] = '1';
+        this.currentGames.set(gameId, array.join(''));
+        console.log(this.currentGames.get(gameId));
+      }
+      else if (playerReady == gameId.split(':')[1])
+      {
+        array[array.length - 1] = '1';
+        this.currentGames.set(gameId, array.join(''));
+        console.log(this.currentGames.get(gameId));
+      }
     }
   }
 
@@ -305,13 +355,18 @@ export class ChatGateway {
   }
 
   async updateBallPosition(player0: string, player1: string, type: string) {
-    // const paddleHit = (this.ballY - this.player0) / this.paddleHeight;
     this.ballX += this.ballSpeedX;
     this.ballY += this.ballSpeedY;
-    const paddleHit = (this.ballY - this.player0) / this.paddleHeight;
+    let paddleHit = (this.ballY - this.player0) / this.paddleHeight;
+    if (paddleHit < 0)
+      paddleHit = 0;
+    else if (paddleHit > 1)
+      paddleHit = 1;
     // console.log("Ball Hit Counter" + this.ballHitCounter);
     // console.log("Ball Speed X" + this.ballSpeedX);
 
+    // console.log("X Ball Speed: " + this.ballSpeedX);
+    // console.log("Y Ball Speed: " + this.ballSpeedY);
     // Ensure the ball stays within the canvas boundaries
     if (this.ballX < 0) {
       // this.ballX = 0;
@@ -351,7 +406,7 @@ export class ChatGateway {
       }
     }
 
-    if (this.ballY - this.ballSize < 0) {
+    else if (this.ballY - this.ballSize < 0) {
       this.ballY = this.ballSize;
       this.ballSpeedY = Math.abs(this.ballSpeedY); // Reverse Y speed
       this.ballHitCounter++;
@@ -367,52 +422,78 @@ export class ChatGateway {
     }
 
     // Check for collision with Player 0 paddle
-    if (
+    else if (
         this.ballX - this.ballSize < this.paddleWidth &&
         this.ballY > this.player0 &&
         this.ballY < this.player0 + this.paddleHeight
     ) {
       // Handle collision with Player 0 paddle
-      console.log("ballY: " + this.ballY + "player0: " + this.player0);
-      // const paddleHit = (this.ballY - this.player0) / this.paddleHeight;
-      console.log("paddleHit: " + paddleHit);
+      // console.log("ballY: " + this.ballY + "player0: " + this.player0);
+      // console.log("paddleHit: " + paddleHit);
       let deviate = (2 * ((paddleHit - 0.5) ** 2)) + 1;
-      if (deviate > 1.5)
-        deviate = 1.5;
+      console.log("Paddel Hit: " + paddleHit);
       console.log("deviate: " + deviate);
+      // if (deviate > 1.5)
+      //   deviate = 1.5;
+      // console.log("deviate: " + deviate);
       this.ballX = this.paddleWidth + this.ballSize;
       this.ballSpeedX = Math.abs(this.ballSpeedX); // Reverse X speed
-      console.log("player0 hit the ball!!!!");
+      // console.log("player0 hit the ball!!!!");
       this.ballHitCounter++;
-      this.ballSpeedX *= 1 + (1 / this.ballHitCounter) / 2.5;
-      this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 2.5;
-      this.ballSpeedY *= deviate;
-      this.ballSpeedX /= deviate;
+      console.log("X Ball Speed 1: " + this.ballSpeedX);
+      console.log("Y Ball Speed 1: " + this.ballSpeedY);
+      this.ballSpeedX *= 1 + (1 / this.ballHitCounter) / 4;
+      this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 4;
+      let angle = Math.PI / 8 * deviate;
+      console.log("Angle: " + angle);
+      let magnitude = Math.sqrt(this.ballSpeedX ** 2 + this.ballSpeedY ** 2);
+      let normalizedSpeedX = this.ballSpeedX / magnitude;
+      let normalizedSpeedY = this.ballSpeedY / magnitude;
+      // Calculate the new ball speed components using rotation
+      this.ballSpeedX = normalizedSpeedX * Math.cos(angle) - normalizedSpeedY * Math.sin(angle);
+      this.ballSpeedY = normalizedSpeedX * Math.sin(angle) + normalizedSpeedY * Math.cos(angle);
+      this.ballSpeedX *= magnitude;
+      this.ballSpeedY *= magnitude;
+      console.log("X Ball Speed 3: " + this.ballSpeedX);
+      console.log("Y Ball Speed 3: " + this.ballSpeedY);
       this.hit = 1;
     }
 
     // Check for collision with Player 1 paddle
-    if (
+    else if (
         this.ballX + this.ballSize > this.canvasWidth - this.paddleWidth &&
         this.ballY > this.player1 &&
         this.ballY < this.player1 + this.paddleHeight
     ) {
       // Handle collision with Player 1 paddle
-      console.log("ballY: " + this.ballY + "player0: " + this.player0);
-      // const paddleHit = (this.ballY - this.player0) / this.paddleHeight;
-      console.log("paddleHit: " + paddleHit);
+      // console.log("ballY: " + this.ballY + "player0: " + this.player0);
+      // console.log("paddleHit: " + paddleHit);
       let deviate = (2 * ((paddleHit - 0.5) ** 2)) + 1;
-      if (deviate > 1.5)
-        deviate = 1.5;
+      console.log("Paddel Hit: " + paddleHit);
       console.log("deviate: " + deviate);
+      // if (deviate > 1.5)
+      //   deviate = 1.5;
+      // console.log("deviate: " + deviate);
       this.ballX = this.canvasWidth - this.paddleWidth - this.ballSize;
       this.ballSpeedX = -Math.abs(this.ballSpeedX); // Reverse X speed
-      console.log("player1 hit the ball!!!!");
+      // console.log("player1 hit the ball!!!!");
       this.ballHitCounter++;
-      this.ballSpeedX *= 1 + (1 / this.ballHitCounter) / 2.5;
-      this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 2.5;
-      this.ballSpeedY *= deviate;
-      this.ballSpeedX /= deviate;
+      console.log("X Ball Speed 1: " + this.ballSpeedX);
+      console.log("Y Ball Speed 1: " + this.ballSpeedY);
+      this.ballSpeedX *= 1 + (1 / this.ballHitCounter) / 4;
+      this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 4;
+      let angle = Math.PI / 8 * deviate;
+      console.log("Angle: " + angle);
+      let magnitude = Math.sqrt(this.ballSpeedX ** 2 + this.ballSpeedY ** 2);
+      let normalizedSpeedX = this.ballSpeedX / magnitude;
+      let normalizedSpeedY = this.ballSpeedY / magnitude;
+      // Calculate the new ball speed components using rotation
+      this.ballSpeedX = normalizedSpeedX * Math.cos(angle) - normalizedSpeedY * Math.sin(angle);
+      this.ballSpeedY = normalizedSpeedX * Math.sin(angle) + normalizedSpeedY * Math.cos(angle);
+      this.ballSpeedX *= magnitude;
+      this.ballSpeedY *= magnitude;
+      console.log("X Ball Speed 3: " + this.ballSpeedX);
+      console.log("Y Ball Speed 3: " + this.ballSpeedY);
       this.hit = 1;
     }
   }
