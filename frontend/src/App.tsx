@@ -393,8 +393,8 @@ const Game = () => {
                 clearCanvas();
                 drawField();
                 EstamosNaChampions(gameData.score);
-                drawPaddle(0, gameData.player0, 10, 150);
-                drawPaddle(1, gameData.player1, 10, 150);
+                drawPaddle(0, gameData.player0, 10, 100);
+                drawPaddle(1, gameData.player1, 10, 100);
                 drawBall(gameData.ballX, gameData.ballY);
                 console.log(gameData.hit);
                 if (gameData.hit == 1)
@@ -454,8 +454,8 @@ const Game = () => {
             }
         };
 
-        const handleKeyPress = (event: KeyboardEvent) => {
-            const gameinfo = cookieData['authCookie1'] + '|' + gameId;
+        const handleKeyDown = (event: KeyboardEvent) => {
+            const gameinfo = cookieData['authCookie1'] + '|' + gameId + '|' + '1';
             if (event.key === "w") {
                 // Handle Player 0 UP key press
                 newSocket.emit('player0Up', gameinfo);
@@ -471,10 +471,29 @@ const Game = () => {
             }
         };
 
-        document.addEventListener("keypress", handleKeyPress)
+        const handleKeyUp = (event: KeyboardEvent) => {
+            const gameinfo = cookieData['authCookie1'] + '|' + gameId + '|' + '2';
+            if (event.key === "w") {
+                // Handle Player 0 UP key press
+                newSocket.emit('player0Up', gameinfo);
+            } else if (event.key === "s") {
+                // Handle Player 0 DOWN key press
+                newSocket.emit('player0Down', gameinfo);
+            } else if (event.key === "i") {
+                // Handle Player 1 UP key press
+                newSocket.emit('player1Up', gameinfo);
+            } else if (event.key === "k") {
+                // Handle Player 1 DOWN key press
+                newSocket.emit('player1Down', gameinfo);
+            }
+        };
+
+        document.addEventListener("keyup", handleKeyUp);
+        document.addEventListener("keydown", handleKeyDown);
 
         return () => {
-            document.removeEventListener("keypress", handleKeyPress);
+            document.removeEventListener("keyup", handleKeyUp);
+            document.removeEventListener("keydown", handleKeyDown);
         };
 
     }, []);

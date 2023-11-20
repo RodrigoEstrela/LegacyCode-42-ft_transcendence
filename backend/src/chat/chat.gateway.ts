@@ -155,6 +155,7 @@ export class ChatGateway {
   }
 
 
+  private ballSize = 5;
   private ballX: number = 50;
   private ballY: number = 50;
   private ballSpeedX: number = 5;
@@ -165,12 +166,14 @@ export class ChatGateway {
   private canvasHeight = 400;
   private player0 = 200;
   private player1 = 200;
-  private paddleHeight = 150; // Adjust the paddle hitbox height
+  private paddleHeight = 100; // Adjust the paddle hitbox height
   private paddleWidth = 15; // Adjust the paddle hitbox width
   private player0Score: number = 0;
   private player1Score: number = 0;
   private ballHitCounter: number = 1;
   private hit = 0;
+  private p0Moving = 0;
+  private p1Moving = 0;
 
   @SubscribeMessage('startgame')
   startGameLoop(client: Socket, gameId: string) {
@@ -205,11 +208,11 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player0 = gameplayers[0];
-    // if (user == player0) {
-      this.player0 += 10;
-      if (this.player0 + this.paddleHeight > this.canvasHeight)
-        this.player0 = this.canvasHeight - this.paddleHeight;
-    // }
+    const move = gameinfoparts[2];
+    if (move == '1')
+      this.p0Moving = 1;
+    else if (move == '2')
+      this.p0Moving = 0;
   }
 
   @SubscribeMessage('player0Up')
@@ -219,11 +222,11 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player0 = gameplayers[0];
-    // if (user == player0) {
-      this.player0 -= 10;
-      if (this.player0 < 0)
-        this.player0 = 0;
-    // }
+    const move = gameinfoparts[2];
+    if (move == '1')
+      this.p0Moving = -1;
+    else if (move == '2')
+      this.p0Moving = 0;
   }
 
   @SubscribeMessage('player1Down')
@@ -233,11 +236,11 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player1 = gameplayers[1];
-    // if (user == player1) {
-      this.player1 += 10;
-      if (this.player1 + this.paddleHeight > this.canvasHeight)
-        this.player1 = this.canvasHeight - this.paddleHeight;
-    // }
+    const move = gameinfoparts[2];
+    if (move == '1')
+      this.p1Moving = 1;
+    else if (move == '2')
+      this.p1Moving = 0;
   }
 
   @SubscribeMessage('player1Up')
@@ -247,11 +250,11 @@ export class ChatGateway {
     const gameid = gameinfoparts[1];
     const gameplayers = gameid.split(':');
     const player1 = gameplayers[1];
-    // if (user == player1) {
-      this.player1 -= 10;
-      if (this.player1 < 0)
-        this.player1 = 0;
-    // }
+    const move = gameinfoparts[2];
+    if (move == '1')
+      this.p1Moving = -1;
+    else if (move == '2')
+      this.p1Moving = 0;
   }
 
 
@@ -262,6 +265,22 @@ export class ChatGateway {
     const players = playerstring.split(':');
     const player0 = this.findWebSocketById2(players[0]);
     const player1 = this.findWebSocketById2(players[1]);
+    if (this.p0Moving == 1)
+      this.player0 += 10;
+    else if (this.p0Moving == -1)
+      this.player0 -= 10;
+    if (this.p1Moving == 1)
+      this.player1 += 10;
+    else if (this.p1Moving == -1)
+      this.player1 -= 10;
+    if (this.player0 < 0)
+      this.player0 = 0;
+    else if (this.player0 + this.paddleHeight > this.canvasHeight)
+      this.player0 = this.canvasHeight - this.paddleHeight;
+    if (this.player1 < 0)
+      this.player1 = 0;
+    else if (this.player1 + this.paddleHeight > this.canvasHeight)
+      this.player1 = this.canvasHeight - this.paddleHeight;
     // Update the game state, including ball position, collision detection, scoring, etc.
     this.updateBallPosition(players[0], players[1], type);
 
@@ -312,7 +331,7 @@ export class ChatGateway {
         await this.userService.addGameHistory(player1, player0, score, "win", type)
         await this.userService.addGameHistory(player0, player1, score, "loss", type)
       }
-    } else if (this.ballX > this.canvasWidth - 10) {
+    } else if (this.ballX + this.ballSize > this.canvasWidth) {
       // this.ballX = this.canvasWidth - 10;
       // this.ballSpeedX = -Math.abs(this.ballSpeedX); // Reverse X speed
       this.player0Score++;
@@ -332,14 +351,14 @@ export class ChatGateway {
       }
     }
 
-    if (this.ballY < 0) {
-      this.ballY = 0;
+    if (this.ballY - this.ballSize < 0) {
+      this.ballY = this.ballSize;
       this.ballSpeedY = Math.abs(this.ballSpeedY); // Reverse Y speed
       this.ballHitCounter++;
       this.ballSpeedX *= 1 + (1 / this.ballHitCounter) / 2.5;
       this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 2.5;
     }
-    else if (this.ballY > this.canvasHeight - 10) {
+    else if (this.ballY + this.ballSize > this.canvasHeight) {
       this.ballY = this.canvasHeight - 10;
       this.ballSpeedY = -Math.abs(this.ballSpeedY); // Reverse Y speed
       this.ballHitCounter++;
@@ -349,7 +368,7 @@ export class ChatGateway {
 
     // Check for collision with Player 0 paddle
     if (
-        this.ballX < this.paddleWidth &&
+        this.ballX - this.ballSize < this.paddleWidth &&
         this.ballY > this.player0 &&
         this.ballY < this.player0 + this.paddleHeight
     ) {
@@ -361,7 +380,7 @@ export class ChatGateway {
       if (deviate > 1.5)
         deviate = 1.5;
       console.log("deviate: " + deviate);
-      this.ballX = this.paddleWidth;
+      this.ballX = this.paddleWidth + this.ballSize;
       this.ballSpeedX = Math.abs(this.ballSpeedX); // Reverse X speed
       console.log("player0 hit the ball!!!!");
       this.ballHitCounter++;
@@ -374,7 +393,7 @@ export class ChatGateway {
 
     // Check for collision with Player 1 paddle
     if (
-        this.ballX > this.canvasWidth - this.paddleWidth &&
+        this.ballX + this.ballSize > this.canvasWidth - this.paddleWidth &&
         this.ballY > this.player1 &&
         this.ballY < this.player1 + this.paddleHeight
     ) {
@@ -386,7 +405,7 @@ export class ChatGateway {
       if (deviate > 1.5)
         deviate = 1.5;
       console.log("deviate: " + deviate);
-      this.ballX = this.canvasWidth - this.paddleWidth;
+      this.ballX = this.canvasWidth - this.paddleWidth - this.ballSize;
       this.ballSpeedX = -Math.abs(this.ballSpeedX); // Reverse X speed
       console.log("player1 hit the ball!!!!");
       this.ballHitCounter++;
