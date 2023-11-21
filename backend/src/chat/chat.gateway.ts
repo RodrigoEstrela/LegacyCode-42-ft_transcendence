@@ -167,7 +167,7 @@ export class ChatGateway {
   private canvasHeight = 400;
   private player0 = 200;
   private player1 = 200;
-  private paddleHeight = 100; // Adjust the paddle hitbox height
+  private paddleHeight = 110; // Adjust the paddle hitbox height
   private paddleWidth = 15; // Adjust the paddle hitbox width
   private player0Score: number = 0;
   private player1Score: number = 0;
@@ -431,11 +431,10 @@ export class ChatGateway {
       // console.log("ballY: " + this.ballY + "player0: " + this.player0);
       // console.log("paddleHit: " + paddleHit);
       let deviate = (2 * ((paddleHit - 0.5) ** 2)) + 1;
+      if (paddleHit < 0.5)
+        deviate = -deviate;
       console.log("Paddel Hit: " + paddleHit);
       console.log("deviate: " + deviate);
-      // if (deviate > 1.5)
-      //   deviate = 1.5;
-      // console.log("deviate: " + deviate);
       this.ballX = this.paddleWidth + this.ballSize;
       this.ballSpeedX = Math.abs(this.ballSpeedX); // Reverse X speed
       // console.log("player0 hit the ball!!!!");
@@ -444,7 +443,7 @@ export class ChatGateway {
       console.log("Y Ball Speed 1: " + this.ballSpeedY);
       this.ballSpeedX *= 1 + (1 / this.ballHitCounter) / 4;
       this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 4;
-      let angle = Math.PI / 8 * deviate;
+      let angle = Math.PI / 14 * deviate;
       console.log("Angle: " + angle);
       let magnitude = Math.sqrt(this.ballSpeedX ** 2 + this.ballSpeedY ** 2);
       let normalizedSpeedX = this.ballSpeedX / magnitude;
@@ -469,11 +468,10 @@ export class ChatGateway {
       // console.log("ballY: " + this.ballY + "player0: " + this.player0);
       // console.log("paddleHit: " + paddleHit);
       let deviate = (2 * ((paddleHit - 0.5) ** 2)) + 1;
+      if (paddleHit > 0.5)
+        deviate = -deviate;
       console.log("Paddel Hit: " + paddleHit);
       console.log("deviate: " + deviate);
-      // if (deviate > 1.5)
-      //   deviate = 1.5;
-      // console.log("deviate: " + deviate);
       this.ballX = this.canvasWidth - this.paddleWidth - this.ballSize;
       this.ballSpeedX = -Math.abs(this.ballSpeedX); // Reverse X speed
       // console.log("player1 hit the ball!!!!");
@@ -482,7 +480,7 @@ export class ChatGateway {
       console.log("Y Ball Speed 1: " + this.ballSpeedY);
       this.ballSpeedX *= 1 + (1 / this.ballHitCounter) / 4;
       this.ballSpeedY *= 1 + (1 / this.ballHitCounter) / 4;
-      let angle = Math.PI / 8 * deviate;
+      let angle = Math.PI / 14 * deviate;
       console.log("Angle: " + angle);
       let magnitude = Math.sqrt(this.ballSpeedX ** 2 + this.ballSpeedY ** 2);
       let normalizedSpeedX = this.ballSpeedX / magnitude;
@@ -525,6 +523,7 @@ export class ChatGateway {
   @SubscribeMessage('friendlyqueue')
   async queueFriendly(client: Socket, user: string) {
     console.log('Received queue request');
+    console.log(user);
     user = user.substring(16, user.indexOf('"', 16));
     console.log(user);
     this.friendlyQueue.set(user, client);
