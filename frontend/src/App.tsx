@@ -393,8 +393,8 @@ const Game = () => {
                 clearCanvas();
                 drawField();
                 EstamosNaChampions(gameData.score);
-                drawPaddle(0, gameData.player0, 10, 100);
-                drawPaddle(1, gameData.player1, 10, 100);
+                drawPaddle(0, gameData.player0, 10, 110);
+                drawPaddle(1, gameData.player1, 10, 110);
                 drawBall(gameData.ballX, gameData.ballY);
                 console.log(gameData.hit);
                 if (gameData.hit == 1)
